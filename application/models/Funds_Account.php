@@ -143,11 +143,11 @@
 
 		// 给某个帐户的某个币种增加/减少钱
 		// 如何正确的完成修改，返回true，否则返回错误信息
-		private function modify_balance($id, $currency, $amount) {
+		public function modify_balance($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
 				return '不支持的币种';
 			$where = array(
-				'funds_account' => $id
+				'funds_account' => $id,
 				'currency_type' => $currency,
 				);
 			$account = $this->db->get_where('funds_account', array(
@@ -158,6 +158,9 @@
 			}
 			$query = $this->db->get_where('currency',$where);
 			if ($query->num_rows() == 0) {
+				if($amount < 0) {
+					return '新增的币种余额为负！';
+				}
 				$this->db->insert('currency',array(
 					'funds_account' => $id,
 					'currency_type' => $currency,
@@ -166,13 +169,23 @@
 					));
 			} else {
 				$result = $this->db->select('balance')->get_where('currency', $where)->result_array();
-				$pre_balance = $result['balance'];
+				$pre_balance = $result[0]['balance'];
+				if ($pre_balance + $amount < 0)
+					return '余额不足！id 为'.$id.'的账户的'.$currency.'余额为'.$pre_balance.' 而支出为'.$amount;
 				$this->db->where($where);
 				$this->db->update('currency', array(
 					'balance' => $pre_balance + $amount
 					));
 			}
 			return true;
+
+		}
+
+		// 得到一个用户的所有信息
+		public function get_user($where) {
+			$result = $this->db->get_where('funds_account', $where);
+			if ($result->num_rows() == 0) return false;
+			return $result->result_array();
 
 		}
 

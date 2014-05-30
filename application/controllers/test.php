@@ -14,15 +14,27 @@
  			
  			// 测试 new_account
  			if (false) {
+ 				echo 'create new account';
 	 			$acc = array(
-	 				'stock_account' => 1, 
-	 				'trade_password' => '123', 
+	 				'stock_account' 	=> 1, 
+	 				'trade_password' 	=> '123', 
 	 				'withdraw_password' => '456',
-	 				'id_card_number' => '123456',
-	 				'customer_name' => 'aaa',
-	 				'lost_state' => 0,
-	 				'cancel_state' => 0);
+	 				'id_card_number' 	=> '123456',
+	 				'customer_name' 	=> 'aaa',
+	 				'lost_state' 		=> 0,
+	 				'cancel_state' 		=> 0);
 	 			$this->funds_account->new_account($acc);
+	 			assert($this->funds_account->get_user(array(
+	 					'customer_name' => $acc['customer_name']
+	 				)));
+ 			}
+
+ 			// 测试modify_balance,需要修改该函数为public
+ 			if (true) {
+ 				$result = $this->funds_account->modify_balance(2,'HKD',-200);
+ 				echo $result;
+ 				assert($result === true);
+
  			}
 
  			// 测试 verify_trade_pwd

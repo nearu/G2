@@ -17,7 +17,5 @@
 		public function handle_cancel_application($account, $result, $reason) {
 
 		}
-
-		
 	}
 ?>

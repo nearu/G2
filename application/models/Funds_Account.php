@@ -142,13 +142,20 @@
 		}
 
 		// 给某个帐户的某个币种增加/减少钱
+		// 如何正确的完成修改，返回true，否则返回错误信息
 		private function modify_balance($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
-				return false;
+				return '不支持的币种';
 			$where = array(
 				'funds_account' => $id
 				'currency_type' => $currency,
 				);
+			$account = $this->db->get_where('funds_account', array(
+				'id' => $id
+				));
+			if ($account->num_rows() == 0) {
+				return 'id 为'.$id.'账号不存在！';
+			}
 			$query = $this->db->get_where('currency',$where);
 			if ($query->num_rows() == 0) {
 				$this->db->insert('currency',array(
@@ -165,6 +172,7 @@
 					'balance' => $pre_balance + $amount
 					));
 			}
+			return true;
 
 		}
 

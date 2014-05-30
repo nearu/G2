@@ -8,7 +8,6 @@
  			$this->load->model('funds_account');
  			
 
-
  			// 测试 verify_currency
  			assert($this->funds_account->verify_currency('HKD'));
  			//assert($this->funds_account->verify_currency('USD'));

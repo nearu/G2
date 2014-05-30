@@ -14,8 +14,7 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function save($account, $currency, $amount) {
-			if (ok)
-				$this->modify_balance($id, $currency, $amount);
+			
 		}
 
 		/**
@@ -23,8 +22,7 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function withdraw($account, $currency, $amount) {
-			if (ok)
-				$this->modify_balance($id, $currency, -$amount);
+
 		}
 
 		/**
@@ -62,25 +60,34 @@
 		}
 
 		// 验证交易密码
-		// 返回 true / false
-		public function verify_trade_pwd($id, $pwd) {
-			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND trade_password='" . $pwd . "'";			
+		public function verify_trade_pwd($account) {
+			$id = $account['id'];
+			$pwd = $account['trade_password'];
+			$sql = "SELECT * FROM funds_account WHERE id='" + $id + "AND trade_password='" + $pwd + "'";
 			$query = $this->db->query($sql);
 			return ($query->num_rows() > 0);
 		}
 
 		// 验证取款密码
-		// 返回 true / false
-		public function verify_withdraw_pwd($id, $pwd) {
-			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND withdraw_password='" . $pwd . "'";
+		public function verify_withdraw_pwd($account) {
+			$id = $account['id'];
+			$pwd = $account['withdraw_password'];
+			$sql = "SELECT * FROM funds_account WHERE id='" + $id + "AND withdraw_password='" + $pwd + "'";
 			$query = $this->db->query($sql);
 			return ($query->num_rows() > 0);
 		}
 
 		// 新建资金账户
 		public function new_account($account) {
-			$account['create_state'] = 0;
-			$this->db->insert('funds_account', $account);
+			$stock_id = $account['stock_account'];
+			$t_pwd = $account['trade_password'];
+			$w_pwd = $account['withdraw_password'];
+			$id_card = $account['id_card_number'];
+			$name = $account['customer_name'];
+			$lost_s = $account['lost_state'];
+			$cancel_s = $account['cancel_state'];
+			//
+			
 		}
 		
 		// 验证币种是否正确
@@ -91,63 +98,17 @@
 		}
 
 		// 兑换货币
-		public function exchange_currency($id, $withdraw_pwd, $currency_from, $currency_to, $amount) {
-			if (!$this->verify_withdraw_pwd($id, $withdraw_pwd) || 
-				!$this->verify_currency($currency_from) || 
-				!$this->verify_currency($currency_to))
-				return false;
-			$t = $this->get_balance($id, $currency_from);
-			if ($t === false || $t < $amount)
-				return false;
-			$rate = $this->get_rate($currency_from, $currency_to);
-			$this->modify_balance($id, $currency_from, -$amount);
-			$this->modify_balance($id, $currency_to, $amount * $rate);
-			return true;
-		}
-
-		// 修改交易密码
-		// 返回 true / false
-		public function change_trade_pwd($id, $old_pwd, $new_pwd) {
-			if ($this->verify_trade_pwd($id, $old_pwd) == false)
-				return false;
-			$sql = "UPDATE funds_account SET trade_password='" . $new_pwd . "' WHERE id='" . $id . "'";
-			$this->db->query($sql);
-			return true;
-		}
-
-		// 修改取款密码
-		// 返回 true / false
-		public function change_withdraw_pwd($id, $old_pwd, $new_pwd) {
-			if ($this->verify_withdraw_pwd($id, $old_pwd) == false)
-				return false;
-			$sql = "UPDATE funds_account SET withdraw_password='" . $new_pwd . "' WHERE id='" . $id . "'";
-			$this->db->query($sql);
-			return true;	
-		}
-
-		// ---------------------------------------------------------------------------
-		// Private Functions
-		// ---------------------------------------------------------------------------
-
-		// 取得一个帐户某个币种的余额
-		private function get_balance($id, $currency) {
-			if (!$this->verify_currency($currency))
-				return false;
-			$sql = "SELECT * FROM currency WHERE funds_account='" . $id . "' AND currency_type='" . $currency . "'";
-			$query = $this->db->query($sql);
-			if ($query->num_rows() == 0)
-				return 0;
-			return $query->row()->balance;
-		}
-
-		// 给某个帐户的某个币种增加/减少钱
-		private function modify_balance($id, $currency, $amount) {
+		public function exchange_currency($currency_a, $currency_b, $amount) {
 
 		}
 
-		// 取得汇率
-		private function get_rate($currency_from, $currency_to) {
-			return 1;
+		// 修改密码
+		public function change_trade_pwd($account, $new_pwd) {
+
+		}
+
+		public function change_withdraw_pwd($account, $new_pwd) {
+			
 		}
 	}
 ?>

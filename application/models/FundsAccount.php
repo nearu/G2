@@ -55,7 +55,7 @@
 
 		// 验证交易密码
 		public function verify_trade_pwd($account) {
-
+			$sql = 
 		}
 
 		// 验证取款密码
@@ -70,7 +70,9 @@
 		
 		// 验证币种是否正确
 		public function verify_currency($currency) {
-
+			// 所有合法币种
+			$all_currency_type = array("CNY", "HKD", "EUR");
+			return in_array($currency, $all_currency_type, true);
 		}
 
 		// 兑换货币

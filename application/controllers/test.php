@@ -13,7 +13,7 @@
  			//assert($this->funds_account->verify_currency('USD'));
  			
  			// 测试 new_account
- 			if (false) {
+ 			if (true) {
  				echo 'create new account';
 	 			$acc = array(
 	 				'stock_account' 	=> 1, 
@@ -29,12 +29,14 @@
 	 				)));
  			}
 
- 			// 测试modify_balance,需要修改该函数为public
+ 			// 测试save,withdraw,
  			if (true) {
- 				$result = $this->funds_account->modify_balance(2,'HKD',-200);
+ 				$result = $this->funds_account->save(5,'HKD',200);
  				echo $result;
- 				assert($result === true);
-
+ 				assert($result == true);
+				$result = $this->funds_account->withdraw(5,'HKD',100);
+				echo $result;
+ 				assert($result == true);
  			}
 
  			// 测试 verify_trade_pwd

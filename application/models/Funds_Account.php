@@ -9,39 +9,47 @@
 
 		/**
 		* 存款
-		* account 是从AccountBuilder生成的，下同
+		* id 用户的主键
 		* currency 是传入的字符串，下同
 		* amount 是资金的变化量，下同
 		* 如果操作成功返回true，否则返回错误信息
 		*/
-		public function save($account, $currency, $amount) {
-			if (ok)
-				$this->modify_balance($id, $currency, $amount);
+		public function save($id, $currency, $amount) {
+			if ($amount < 0) 
+				return '存款不能为负！';
+			return $this->modify_balance($id, $currency, $amount);
 		}
 
 		/**
 		* 取款
 		* 如果操作成功返回true，否则返回错误信息
 		*/
-		public function withdraw($account, $currency, $amount) {
-			if (ok)
-				$this->modify_balance($id, $currency, -$amount);
+		public function withdraw($id, $currency, $amount) {
+			if ($amount < 0) 
+				return '取款不能为负！';
+			return $this->modify_balance($id, $currency, -$amount);
 		}
 
 		/**
 		* 冻结
 		* 如果操作成功返回true，否则返回错误信息
 		*/
-		public function freeze($account) {
-
+		public function freeze($id) {
+			if ($this->get_user(array('id'=>$id)) === false) {
+				return '该账户不存在';
+			}
+			$this->db->where('funds_account', $id);
+			$this->db->update('currency', array(
+				'is_frozen' => true,
+				));
 		}
 
 		/**
 		* 确认交易
 		* 传入amount有正负，代表增加余额(+)或减少余额(-)
 		*/
-		public function confirm_trade($account, $currency, $amount) {
-
+		public function confirm_trade($id, $currency, $amount) {
+			return $this->modify_balance($id, $currency, $amount);
 		}
 
 		/**
@@ -49,16 +57,23 @@
 		* 
 		*/
 		public function reapply($account, $new_trade_pwd, $new_withdraw_pwd) {
-
+			if (!$this->verify_trade_pwd($account['id'],$account['trade_password'])) {
+				return '交易密码不正确';
+			}
+			if (!$this->verify_withdraw_pwd($account['id'],$account['withdraw_password'])) {
+				return '取款密码不正确';
+			}
+			
 		}
 
+
 		// 申请挂失
-		public function	report_loss($account) {
+		public function	report_loss($id) {
 
 		}
 
 		// 申请销户
-		public function report_cancel($account) {
+		public function report_cancel($id) {
 
 		}
 
@@ -142,18 +157,19 @@
 		}
 
 		// 给某个帐户的某个币种增加/减少钱
-		// 如何正确的完成修改，返回true，否则返回错误信息
-		public function modify_balance($id, $currency, $amount) {
+		// 如果正确的完成修改，返回true，否则返回错误信息：
+		// 1 该不支持币种
+		// 2 账号不存在
+		// 3 新增币种余额为负
+		// 4 该账户余额不足
+		private function modify_balance($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
 				return '不支持的币种';
 			$where = array(
 				'funds_account' => $id,
 				'currency_type' => $currency,
 				);
-			$account = $this->db->get_where('funds_account', array(
-				'id' => $id
-				));
-			if ($account->num_rows() == 0) {
+			if ($this->get_user(array('id'=>$id)) === false) {
 				return 'id 为'.$id.'账号不存在！';
 			}
 			$query = $this->db->get_where('currency',$where);

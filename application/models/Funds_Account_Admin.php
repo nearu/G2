@@ -1,5 +1,5 @@
 <?php
-	class FundsAccountAdmin extends CI_MODEL {
+	class Funds_Account_Admin extends CI_Model  {
 
 		// 管理员确认开户
 		public function confirm_register($account) {

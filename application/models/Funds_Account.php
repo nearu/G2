@@ -1,5 +1,5 @@
 <?php
-	class FundsAccount extends CI_MODEL {
+	class Funds_Account extends CI_Model  {
 
 		function __construct() {
         	parent::__construct();
@@ -142,6 +142,28 @@
 
 		// 给某个帐户的某个币种增加/减少钱
 		private function modify_balance($id, $currency, $amount) {
+			if (!$this->verify_currency($currency)) 
+				return false;
+			$where = array(
+				'funds_account' => $id
+				'currency_type' => $currency,
+				);
+			$query = $this->db->get_where('currency',$where);
+			if ($query->num_rows() == 0) {
+				$this->db->insert('currency',array(
+					'funds_account' => $id,
+					'currency_type' => $currency,
+					'balance'		=> $amount,
+					'frozen_balance'=> 0
+					));
+			} else {
+				$result = $this->db->select('balance')->get_where('currency', $where)->result_array();
+				$pre_balance = $result['balance'];
+				$this->db->where($where);
+				$this->db->update('currency', array(
+					'balance' => $pre_balance + $amount
+					));
+			}
 
 		}
 

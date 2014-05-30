@@ -14,6 +14,7 @@ CREATE TABLE funds_account (
 
 CREATE TABLE lost_application (
 	funds_account 		int NOT NULL,
+	state 				int state,
 	disapproved_reply 	text,
 	time 				date
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
@@ -21,6 +22,7 @@ CREATE TABLE lost_application (
 
 CREATE TABLE cancel_application (
 	funds_account 		int NOT NULL,
+	state 				int 
 	disapproved_reply 	text,
 	time 				date
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;

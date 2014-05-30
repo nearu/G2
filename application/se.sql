@@ -5,6 +5,7 @@ CREATE TABLE funds_account (
 	withdraw_password	varchar(128),
 	id_card_number 		varchar(128),
 	customer_name 		varchar(128),
+	create_state		int,
 	lost_state			int,
 	cancel_state		int,
 	primary key(id)

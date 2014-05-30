@@ -1,5 +1,11 @@
 <?php
 	class FundsAccount extends CI_MODEL {
+
+		function __construct() {
+        	parent::__construct();
+        	$this->load->database();
+        }
+
 		/**
 		* 存款
 		* account 是从AccountBuilder生成的，下同
@@ -55,17 +61,33 @@
 
 		// 验证交易密码
 		public function verify_trade_pwd($account) {
-			$sql = 
+			$id = $account['id'];
+			$pwd = $account['trade_password'];
+			$sql = "SELECT * FROM funds_account WHERE id='" + $id + "AND trade_password='" + $pwd + "'";
+			$query = $this->db->query($sql);
+			return ($query->num_rows() > 0);
 		}
 
 		// 验证取款密码
 		public function verify_withdraw_pwd($account) {
-			
+			$id = $account['id'];
+			$pwd = $account['withdraw_password'];
+			$sql = "SELECT * FROM funds_account WHERE id='" + $id + "AND withdraw_password='" + $pwd + "'";
+			$query = $this->db->query($sql);
+			return ($query->num_rows() > 0);
 		}
 
 		// 新建资金账户
 		public function new_account($account) {
-
+			$stock_id = $account['stock_account'];
+			$t_pwd = $account['trade_password'];
+			$w_pwd = $account['withdraw_password'];
+			$id_card = $account['id_card_number'];
+			$name = $account['customer_name'];
+			$lost_s = $account['lost_state'];
+			$cancel_s = $account['cancel_state'];
+			//
+			
 		}
 		
 		// 验证币种是否正确

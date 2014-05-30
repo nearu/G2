@@ -1,13 +1,12 @@
 CREATE TABLE funds_account (
-	id 							int NOT NULL auto_increment,
-	stock_account_number 		varchar(128),
-	funds_account_number 	 	varchar(128),
-	password_for_trading 	 	varchar(128),
-	password_for_withdrawing 	varchar(128),
-	id_card_number 				varchar(128),
-	customer_name 				varchar(128),
-	lost_state					int,
-	cancel_state				int,
+	id					int NOT NULL auto_increment,
+	stock_account		int,
+	trade_password		varchar(128),
+	withdraw_password	varchar(128),
+	id_card_number 		varchar(128),
+	customer_name 		varchar(128),
+	lost_state			int,
+	cancel_state		int,
 	primary key(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 

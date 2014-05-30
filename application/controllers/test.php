@@ -1,15 +1,16 @@
 <?php
-	class test extends CI_Controller {
+	class Test extends CI_Controller {
  		function __construct() {
   			parent::__construct();
  		}
 
  		public function test_account() {
- 			$this->load->model('FundsAccount');
+ 			$this->load->model('funds_account');
  			
+
  			// 测试 verify_currency
- 			assert($this->FundsAccount->verify_currency('HKD'));
- 			//assert($this->FundsAccount->verify_currency('USD'));
+ 			assert($this->funds_account->verify_currency('HKD'));
+ 			//assert($this->funds_account->verify_currency('USD'));
  			
  			// 测试 new_account
  			if (false) {
@@ -21,32 +22,32 @@
 	 				'customer_name' => 'aaa',
 	 				'lost_state' => 0,
 	 				'cancel_state' => 0);
-	 			$this->FundsAccount->new_account($acc);
+	 			$this->funds_account->new_account($acc);
  			}
 
  			// 测试 verify_trade_pwd
  			if (false) {
- 				assert($this->FundsAccount->verify_trade_pwd('1', '123'));
+ 				assert($this->funds_account->verify_trade_pwd('1', '123'));
  			}
 
  			// 测试 verify_withdraw_pwd
 			if (false) {
- 				assert($this->FundsAccount->verify_withdraw_pwd(1, '456'));
+ 				assert($this->funds_account->verify_withdraw_pwd(1, '456'));
  			} 
 
  			// 测试 exchange_currency
 			if (true) {
- 				assert($this->FundsAccount->exchange_currency(1, '555', 'HKD', 'CNY', 0));
+ 				assert($this->funds_account->exchange_currency(1, '555', 'HKD', 'CNY', 0));
  			} 			
 
  			// 测试 change_trade_pwd
 			if (false) {
- 				assert($this->FundsAccount->change_trade_pwd(1, '123', '444'));
+ 				assert($this->funds_account->change_trade_pwd(1, '123', '444'));
  			}
 
  			// 测试 change_withdraw_pwd
 			if (false) {
- 				assert($this->FundsAccount->change_withdraw_pwd(1, '456', '555'));
+ 				assert($this->funds_account->change_withdraw_pwd(1, '456', '555'));
  			}  			
  		}
 

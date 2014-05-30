@@ -1,5 +1,5 @@
 <?php
-	class FundsAccountLogManager extends CI_MODEL {
+	class Funds_Account_Log_Manager extends CI_MODEL {
 
 
 		public function insert_log($account, $log) {

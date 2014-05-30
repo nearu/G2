@@ -1,5 +1,5 @@
 <?php
-	class FundsAccount extends CI_MODEL {
+	class Funds_Account extends CI_MODEL {
 
 		function __construct() {
         	parent::__construct();

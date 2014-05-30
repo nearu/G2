@@ -1,4 +1,5 @@
 <?php
+
 	class Funds_Account extends CI_Model  {
 
 		function __construct() {

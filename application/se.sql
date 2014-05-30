@@ -4,7 +4,7 @@ CREATE TABLE funds_account (
 	funds_account_number 	 	varchar(128),
 	password_for_trading 	 	varchar(128),
 	password_for_withdrawing 	varchar(128),
-	IDNumber 					varchar(128),
+	id_card_number 				varchar(128),
 	customer_name 				varchar(128),
 	lost_state					int,
 	cancel_state				int,

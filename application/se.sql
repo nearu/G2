@@ -31,7 +31,6 @@ CREATE TABLE cancel_application (
 CREATE TABLE currency (
 	funds_account 	int NOT NULL,
 	currency_type	varchar(32),
-	is_frozen		boolean,
 	balance 		double,
 	frozen_balance 	double
 )ENGINE=InnoDB DEFAULT CHARSET=UTF8;

@@ -35,29 +35,20 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function freeze_all($id) {
-			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return '该账户不存在';
-			}
-			$this->db->where('funds_account', $id);
-			$result = $this->db->get('currency');
-			$num = $result->num_rows();
-			$curr_array = $result->result_array();
-			for($i = 0; $i < $num; $i++) {
-				$info = freeze($id,$curr_array[i]['currency_type'], $curr_array[i]['balance']);
-				if($info !== true) {
-					return $info;
-				}
-			}
-			return true;
+			return $this->manage_freeze_all($id, 'freeze');
 		}
 		// 冻结某个账户的特定币种，amount为冻结的资金
 		public function freeze($id, $currency, $amount) {
-			$this->manage_freeze($id, $currency,$amount,'freeze');
+			return $this->manage_freeze($id, $currency,$amount,'freeze');
 		}
 
 		public function unfreeze_all($id) {
-			$this->manage_freeze_all($id, 'unfreeze');
+			return $this->manage_freeze_all($id, 'unfreeze');
 
+		}
+
+		public function unfreeze($id, $currency, $amount) {
+			return $this->manage_freeze($id, $currency,$amount,'unfreeze');
 		}
 
 
@@ -98,28 +89,12 @@
 		// 1 表示已经在审核状态
 		// 2 表示已经挂失成功
 		public function	report_loss($id) {
-			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return '该账户不存在';
-			}
-			$this->insert('lost_application', array(
-					'funds_account' => $id,
-					'state' => 0,
-					'reply' => '',
-					'time'  => date("Y-m-d H:i:s")
-				));
+			return $this->manage_report($id, 'lost_application');
 		}
 
 		// 申请销户
 		public function report_cancel($id) {
-			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return '该账户不存在';
-			}
-			$this->insert('cancel_application', array(
-					'funds_account' => $id,
-					'state' => 0,
-					'reply' => '',
-					'time'  => date("Y-m-d H:i:s")
-				));
+			return $this->manage_report($id, 'cancel_application');	
 		}
 
 		// 验证交易密码
@@ -189,30 +164,27 @@
 		// 检查币种存在与否，以及余额是否足够
 		// 都满足，返回true
 		// 否则返回错误信息：
-		// 1 不支持的币种
-		// 2 币种不存在
-		// 3 余额不足
-		// 4 账户的该币种被完全冻结中
-		// 5 账号不存在
+		// e1 不支持的币种
+		// e2 币种不存在
+		// e3 余额不足
+		// e4 账户的该币种被完全冻结中
+		// e5 账号不存在
 		public function check_trade($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
-				return '1';
+				return 'e1';
 			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return '5';
+				return 'e5';
 			}
 			$result = $this->db->get_where('currency', array(
 				'funds_account' => $id,
 				'currency_type' => $currency,
 				));
 			if ($result->num_rows() == 0) {
-				return '2';
+				return 'e2';
 			}
 			$curr = $result->result_array();
-			if ($curr[0]['is_frozen'] == true) {
-				return '4';
-			}
 			if ($curr[0]['balance'] < $amount) {
-				return '3';
+				return 'e3';
 			}
 			return true;
 		}
@@ -245,29 +217,37 @@
 
 		// 给某个帐户的某个币种增加/减少钱
 		// 如果正确的完成修改，返回true，否则返回错误信息：
-		// 1 该不支持币种
-		// 2 该账号下币种不存在
-		// 3 该账户余额不足
-		// 4 账户冻结中
-		// 5 账号不存在
+		// e1 该不支持币种
+		// e2 该账号下币种不存在
+		// e3 该账户余额不足
+		// e4 账户冻结中
+		// e5 账号不存在
 		private function modify_balance($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
-				return '1';
+				return 'e1';
 			$where = array(
 				'funds_account' => $id,
 				'currency_type' => $currency,
 				);
 			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return '5';
+				return 'e5';
 			}
 			$query = $this->db->get_where('currency',$where);
 			if ($query->num_rows() == 0) {
-				return '2';
+				if ($amount < 0) {
+					return 'e2';
+				}
+				$this->db->insert('currency', array(
+						'funds_account' 	=> $id,
+						'currency_type' 	=> $currency,
+						'balance'			=> $amount,
+						'frozen_balance' 	=> 0
+					));
 			} else {
 				$result = $this->db->select('balance')->get_where('currency', $where)->result_array();
 				$pre_balance = $result[0]['balance'];
 				if ($pre_balance + $amount < 0)
-					return '3';
+					return 'e3';
 				$this->db->where($where);
 				$this->db->update('currency', array(
 					'balance' => $pre_balance + $amount
@@ -286,8 +266,14 @@
 			$num = $result->num_rows();
 			$curr_array = $result->result_array();
 			for($i = 0; $i < $num; $i++) {				
-					$info = $this->manage_freeze($id,$curr_array[i]['currency_type'], $curr_array[i]['balance'], $type);
+				$info = $this->manage_freeze($id,$curr_array[$i]['currency_type'], 
+					$type == 'freeze' ? $curr_array[$i]['balance'] : $curr_array[$i]['frozen_balance'],
+					$type);
+				if ($info != true)	{
+					return $info;
+				}
 			}
+			return true;
 		}
 
 		private function manage_freeze($id, $currency, $amount, $type) {
@@ -301,13 +287,13 @@
 				'currency_type' => $currency,
 				));
 			if ($result->num_rows() == 0) {
-				return false;
+				return '没有的对应的币种';
 			}
 			$curr = $result->result_array();
 			$old_balance = $curr[0]['balance'];
 			$old_frozen_balance = $curr[0]['frozen_balance'];
-			var $new_balance;
-			var $new_frozen_balance;
+			$new_balance = 0;
+			$new_frozen_balance = 0;
 			if($type == 'freeze') {
 				$new_balance = $old_balance-$amount;
 				$new_frozen_balance = $old_frozen_balance + $amount;
@@ -315,9 +301,11 @@
 				$new_balance = $old_balance + $amount;
 				$new_frozen_balance = $old_frozen_balance - $amount;
 			}
-
 			if ($new_balance < 0) {
-				return '想冻结的数额大于余额';
+				return '想冻结的数额大于余额!';
+			}
+			if ($new_frozen_balance < 0) {
+				return '想解冻的数额大于已冻结数额！';
 			}
 			$this->db->where(array(
 				'funds_account' => $id,
@@ -329,6 +317,19 @@
 			return true;
 		}
 
+		////// 这里还没有更新account里的状态，需要协商下具体的状态
+		private function manage_report($id, $type) {
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
+				return '该账户不存在';
+			}
+			$this->db->insert($type, array(
+					'funds_account' => $id,
+					'state' => 0,
+					'reply' => '',
+					'time'  => date("Y-m-d H:i:s")
+				));
+			return true;
+		}
 
 		private function delete_user($where) {
 			$this->db->delete('funds_account', $where);

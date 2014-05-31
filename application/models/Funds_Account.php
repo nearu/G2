@@ -63,8 +63,15 @@
 			if (!$this->verify_withdraw_pwd($account['id'],$account['withdraw_password'])) {
 				return '取款密码不正确';
 			}
-			//$user = get_user($account['id']);
-
+			$old_account = get_funds_account($account['id']);
+			$old_account['trade_password'] = $new_trade_pwd;
+			$old_account['withdraw_password'] = $new_withdraw_pwd;
+			unset($old_account['id']);
+			$this->new_account($old_account);
+			$this->delete_account(array(
+				'id' => $account['id'],
+				));
+			return true;
 		}
 
 
@@ -142,6 +149,48 @@
 			return true;	
 		}
 
+		// 检查币种存在与否，以及余额是否足够
+		// 都满足，返回true
+		// 否则返回错误信息：
+		// 1 不支持的币种
+		// 2 币种不存在
+		// 3 余额不足
+		// 4 账户冻结中
+		// 5 账号不存在
+		public function check_trade($id, $currency, $amount) {
+			if (!$this->verify_currency($currency)) 
+				return '1';
+			if ($this->get_user(array('id'=>$id)) === false) {
+				return '5';
+			}
+			$result = $this->db->get_where('currency', array(
+				'funds_account' => $id,
+				'currency_type' => $currency,
+				));
+			if ($result->num_rows() == 0) {
+				return '2';
+			}
+			$curr = $result->result_array();
+			if ($curr['is_frozen'] == true) {
+				return '4';
+			}
+			if ($curr['balance'] < $amount) {
+				return '3';
+			}
+			return true;
+		}
+
+
+		// 得到一个用户的所有信息
+		// where 是使用的where条件
+		public function get_funds_account($where) {
+			$result = $this->db->get_where('funds_account', $where);
+			if ($result->num_rows() == 0) return false;
+			return $result->result_array();
+
+		}
+
+
 		// ---------------------------------------------------------------------------
 		// Private Functions
 		// ---------------------------------------------------------------------------
@@ -190,44 +239,8 @@
 			return true;
 		}
 
-		// 检查币种存在与否，以及余额是否足够
-		// 都满足，返回true
-		// 否则返回错误信息：
-		// 1 不支持的币种
-		// 2 币种不存在
-		// 3 余额不足
-		// 4 账户冻结中
-		// 5 账号不存在
-		public function check_balance($id, $currency, $amount) {
-			if (!$this->verify_currency($currency)) 
-				return '1';
-			if ($this->get_user(array('id'=>$id)) === false) {
-				return '5';
-			}
-			$result = $this->db->get_where('currency', array(
-				'funds_account' => $id,
-				'currency_type' => $currency,
-				));
-			if ($result->num_rows() == 0) {
-				return '2';
-			}
-			$curr = $result->result_array();
-			if ($curr['is_frozen'] == true) {
-				return '4';
-			}
-			if ($curr['balance'] < $amount) {
-				return '3';
-			}
-			return true;
-		}
-
-
-		// 得到一个用户的所有信息
-		public function get_user($where) {
-			$result = $this->db->get_where('funds_account', $where);
-			if ($result->num_rows() == 0) return false;
-			return $result->result_array();
-
+		private function delete_user($where) {
+			$this->db->delete('funds_account', $where);
 		}
 
 		// 取得汇率

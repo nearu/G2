@@ -24,7 +24,7 @@
 	 				'lost_state' 		=> 0,
 	 				'cancel_state' 		=> 0);
 	 			$this->funds_account->new_account($acc);
-	 			assert($this->funds_account->get_user(array(
+	 			assert($this->funds_account->get_funds_account(array(
 	 					'customer_name' => $acc['customer_name']
 	 				)));
  			}

@@ -16,7 +16,7 @@
 		*/
 		public function save($id, $currency, $amount) {
 			if ($amount < 0) 
-				return '存款不能为负！';
+				return '存款数额不能为负！';
 			return $this->modify_balance($id, $currency, $amount);
 		}
 
@@ -26,23 +26,40 @@
 		*/
 		public function withdraw($id, $currency, $amount) {
 			if ($amount < 0) 
-				return '取款不能为负！';
+				return '取款数额不能为负！';
 			return $this->modify_balance($id, $currency, -$amount);
 		}
 
 		/**
-		* 冻结
+		* 冻结该账户下所有的资金
 		* 如果操作成功返回true，否则返回错误信息
 		*/
-		public function freeze($id, $currency = NULL) {
-			if ($this->get_user(array('id'=>$id)) === false) {
+		public function freeze_all($id) {
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
 				return '该账户不存在';
 			}
 			$this->db->where('funds_account', $id);
-			$this->db->update('currency', array(
-				'is_frozen' => true,
-				));
+			$result = $this->db->get('currency');
+			$num = $result->num_rows();
+			$curr_array = $result->result_array();
+			for($i = 0; $i < $num; $i++) {
+				$info = freeze($id,$curr_array[i]['currency_type'], $curr_array[i]['balance']);
+				if($info !== true) {
+					return $info;
+				}
+			}
+			return true;
 		}
+		// 冻结某个账户的特定币种，amount为冻结的资金
+		public function freeze($id, $currency, $amount) {
+			$this->manage_freeze($id, $currency,$amount,'freeze');
+		}
+
+		public function unfreeze_all($id) {
+			$this->manage_freeze_all($id, 'unfreeze');
+
+		}
+
 
 		/**
 		* 确认交易
@@ -64,8 +81,8 @@
 				return '取款密码不正确';
 			}
 			$old_account = get_funds_account($account['id']);
-			$old_account['trade_password'] = $new_trade_pwd;
-			$old_account['withdraw_password'] = $new_withdraw_pwd;
+			$old_account[0]['trade_password'] 	 = $new_trade_pwd;
+			$old_account[0]['withdraw_password'] = $new_withdraw_pwd;
 			unset($old_account['id']);
 			$this->new_account($old_account);
 			$this->delete_account(array(
@@ -155,12 +172,12 @@
 		// 1 不支持的币种
 		// 2 币种不存在
 		// 3 余额不足
-		// 4 账户冻结中
+		// 4 账户的该币种被完全冻结中
 		// 5 账号不存在
 		public function check_trade($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
 				return '1';
-			if ($this->get_user(array('id'=>$id)) === false) {
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
 				return '5';
 			}
 			$result = $this->db->get_where('currency', array(
@@ -171,10 +188,10 @@
 				return '2';
 			}
 			$curr = $result->result_array();
-			if ($curr['is_frozen'] == true) {
+			if ($curr[0]['is_frozen'] == true) {
 				return '4';
 			}
-			if ($curr['balance'] < $amount) {
+			if ($curr[0]['balance'] < $amount) {
 				return '3';
 			}
 			return true;
@@ -220,7 +237,7 @@
 				'funds_account' => $id,
 				'currency_type' => $currency,
 				);
-			if ($this->get_user(array('id'=>$id)) === false) {
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
 				return '5';
 			}
 			$query = $this->db->get_where('currency',$where);
@@ -238,6 +255,60 @@
 			}
 			return true;
 		}
+
+		private function manage_freeze_all($id, $type) {
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
+				return '该账户不存在';
+			}
+			$result = $this->db->get_where('currency', array(
+				'funds_account' => $id,
+				));
+			$num = $result->num_rows();
+			$curr_array = $result->result_array();
+			for($i = 0; $i < $num; $i++) {				
+					$info = $this->manage_freeze($id,$curr_array[i]['currency_type'], $curr_array[i]['balance'], $type);
+			}
+		}
+
+		private function manage_freeze($id, $currency, $amount, $type) {
+			if (!$this->verify_currency($currency)) 
+				return '不支持的币种';
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
+				return '该账户不存在';
+			}
+			$result = $this->db->get_where('currency', array(
+				'funds_account' => $id,
+				'currency_type' => $currency,
+				));
+			if ($result->num_rows() == 0) {
+				return false;
+			}
+			$curr = $result->result_array();
+			$old_balance = $curr[0]['balance'];
+			$old_frozen_balance = $curr[0]['frozen_balance'];
+			var $new_balance;
+			var $new_frozen_balance;
+			if($type == 'freeze') {
+				$new_balance = $old_balance-$amount;
+				$new_frozen_balance = $old_frozen_balance + $amount;
+			} else {
+				$new_balance = $old_balance + $amount;
+				$new_frozen_balance = $old_frozen_balance - $amount;
+			}
+
+			if ($new_balance < 0) {
+				return '想冻结的数额大于余额';
+			}
+			$this->db->where(array(
+				'funds_account' => $id,
+				'currency_type' => $currency,
+				))->update('currency', array(
+					'balance' => $new_balance,
+					'frozen_balance' => $new_frozen_balance,
+				));
+			return true;
+		}
+
 
 		private function delete_user($where) {
 			$this->db->delete('funds_account', $where);

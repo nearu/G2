@@ -93,13 +93,33 @@
 
 
 		// 申请挂失
+		// lost_state ： 
+		// 0 表示正在申请挂失，
+		// 1 表示已经在审核状态
+		// 2 表示已经挂失成功
 		public function	report_loss($id) {
-
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
+				return '该账户不存在';
+			}
+			$this->insert('lost_application', array(
+					'funds_account' => $id,
+					'state' => 0,
+					'reply' => '',
+					'time'  => date("Y-m-d H:i:s")
+				));
 		}
 
 		// 申请销户
 		public function report_cancel($id) {
-
+			if ($this->get_funds_account(array('id'=>$id)) === false) {
+				return '该账户不存在';
+			}
+			$this->insert('cancel_application', array(
+					'funds_account' => $id,
+					'state' => 0,
+					'reply' => '',
+					'time'  => date("Y-m-d H:i:s")
+				));
 		}
 
 		// 验证交易密码

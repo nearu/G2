@@ -198,11 +198,16 @@
 				return 'e3';
 			}
 			if( !( $this->verify_trade_pwd( $id, $trade_password ) === true ) ){
-				return 'e6'
+				return 'e6';
 			}
 			return true;
 		}
 
+		// 得到一个证券账户下所有资金账户
+		public function get_acc_by_stock_acc($stock_account) {
+			$result = $this->db->get_where('funds_account', array('stock_account' => $stock_account));
+			return $result->result_array();
+		}
 
 		// 得到一个用户的所有信息
 		// where 是使用的where条件

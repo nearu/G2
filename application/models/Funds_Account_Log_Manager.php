@@ -6,15 +6,6 @@
         	$this->load->database();
         }
 
-<<<<<<< HEAD
-
-		public function insert_log($account, $log) {
-			
-		}
-
-		public function get_log($account, $condition) {
-			
-=======
         //log是一个数组
 		public function insert_log( $log ) {
 			$this->db->insert( 'log', $log );
@@ -27,7 +18,6 @@
 			$query = $this->db->get( 'log' );
 
 			return $query->result_array();
->>>>>>> 9df2d25f94ff80942db1e74208442d0a9742762b
 		}
 	}
 ?>

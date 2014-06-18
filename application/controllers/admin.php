@@ -3,6 +3,7 @@ class admin extends CI_Controller {
 	function __construct() {
 		parent::__construct();
 		$this->load->model('funds_account_admin');
+		$this->load->model('funds_account_log_manager');
 		$this->load->helper("url");
 		$this->load->library("session");
 	}
@@ -97,6 +98,37 @@ class admin extends CI_Controller {
 		$this->session->sess_destroy();
         header("Location: " . base_url()."index.php/admin/");
         return ;
+	}
+
+	public function log(){
+		$logs = array();
+		if ($this->input->post()) {
+			$id = $this->input->post("id");
+			$currency = $this->input->post("currency");
+			$date = $this->input->post("date");
+			$increase = $this->input->post("increase");
+
+			$condition = array();
+			if( strlen($id) > 0 ){
+				$condition['funds_account_number'] = $id;
+			}
+			if( strlen($currency) > 0 ){
+				$condition['currency'] = $currency;
+			}
+			if( strlen($date) > 0 ){
+				$condition['time like'] = $currency."%";
+			}
+			if( $increase == 'increase' ){
+				$condition['amount >'] = 0;
+			}
+			else if( $increase == 'decrease' ){
+				$condition['amount <'] = 0;
+			}
+			//echo $condition['funds_account_number']."<br>".$condition['currency']."<br>".$condition['time like']."<br>".$condition['amount >']."<br>".$condition['amount <'];
+			$logs = $this->funds_account_log_manager->get_log( $condition );
+		}
+		$this->load->view("main_head",array("active"=>"log"));
+		$this->load->view("log", array( "logs" => $logs ) );
 	}
 
 	private function check_login_state($levelRequirement = 1)

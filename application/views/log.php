@@ -41,7 +41,7 @@
     <tbody>
         <?php foreach($logs as $log): ?>
         <tr>
-            <td><?=$log['funds_account_number']?></td>
+            <td><?=$log['funds_account']?></td>
             <td><?=$log['currency']?></td> 
             <td><?= $log['amount'] > 0 ? '+'.(string)$log['amount'] : (string)$log['amount'] ?></td>
             <td><?=$log['balance']?></td>

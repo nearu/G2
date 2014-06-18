@@ -110,7 +110,7 @@ class admin extends CI_Controller {
 
 			$condition = array();
 			if( strlen($id) > 0 ){
-				$condition['funds_account_number'] = $id;
+				$condition['funds_account'] = $id;
 			}
 			if( strlen($currency) > 0 ){
 				$condition['currency'] = $currency;
@@ -124,7 +124,7 @@ class admin extends CI_Controller {
 			else if( $increase == 'decrease' ){
 				$condition['amount <'] = 0;
 			}
-			//echo $condition['funds_account_number']."<br>".$condition['currency']."<br>".$condition['time like']."<br>".$condition['amount >']."<br>".$condition['amount <'];
+			//echo $condition['funds_account']."<br>".$condition['currency']."<br>".$condition['time like']."<br>".$condition['amount >']."<br>".$condition['amount <'];
 			$logs = $this->funds_account_log_manager->get_log( $condition );
 		}
 		$this->load->view("main_head",array("active"=>"log"));

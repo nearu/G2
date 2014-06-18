@@ -18,8 +18,8 @@
  				echo '测试：开户';
 	 			$acc = array(
 	 				'stock_account' 	=> 1, 
-	 				'trade_password' 	=> '1234567890', 
-	 				'withdraw_password' => '4567890123',
+	 				'trade_password' 	=> md5('1234567890'), 
+	 				'withdraw_password' => md5('4567890123'),
 	 				'id_card_number' 	=> '123455432112345678',
 	 				'customer_name' 	=> '陈译',
 	 				'lost_state' 		=> 0,
@@ -31,12 +31,27 @@
  			}
 
  			// 测试：存钱
- 			if (true) {
+ 			if (false) {
  				echo '测试：存钱';
  				$id = '3d3ebea629b44c2a8d3650306c3a18d3';
  				$result = $this->funds_account->save($id,'CNY',200);
  				//$this->printMsg('test save', $result);
  				assert($result == true);
+ 			}
+
+
+ 			// 测试：修改交易密码
+			if (true) {
+				echo "测试：修改交易密码";
+				$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 				assert($this->funds_account->change_trade_pwd($id, '1234567890', 'new_password'));
+ 			}
+
+ 			// 测试：修改取款密码
+			if (false) {
+				echo "测试：修改取款密码";
+				$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 				assert($this->funds_account->change_withdraw_pwd($id, '4567890123', 'new_password'));
  			}
 
  			if( false ){
@@ -87,15 +102,7 @@
  				assert($this->funds_account->exchange_currency(1, '555', 'HKD', 'CNY', 0));
  			} 			
 
- 			// 测试 change_trade_pwd
-			if (false) {
- 				assert($this->funds_account->change_trade_pwd(1, '123', '444'));
- 			}
-
- 			// 测试 change_withdraw_pwd
-			if (false) {
- 				assert($this->funds_account->change_withdraw_pwd(1, '456', '555'));
- 			} 
+ 			
 
  			////////////////////////////////////////////////////////////////////////
  			// cy的测试在下面													////

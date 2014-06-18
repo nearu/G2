@@ -24,7 +24,11 @@
 		* 取款
 		* 如果操作成功返回true，否则返回错误信息
 		*/
-		public function withdraw($id, $currency, $amount) {
+		public function withdraw($id, $currency, $amount, $withdraw_password) {
+			$res = $this->check_withdraw_password( $id, $withdraw_password );
+			if( !( $res === true ) ){
+				return $res;
+			}
 			if ($amount < 0) 
 				return '取款数额不能为负！';
 			return $this->modify_balance($id, $currency, -$amount);
@@ -313,6 +317,26 @@
 		// ---------------------------------------------------------------------------
 		// Private Functions
 		// ---------------------------------------------------------------------------
+
+		private function check_withdraw_password( $id, $withdraw_password ){
+			$where = array(
+				'id' => $id
+				);
+			$query = $this->db->get_where( 'funds_account', $where );
+			if( $query->num_rows() == 0 ){
+				return '不存在这个账户';
+			}
+
+			$res = $query->result_array();
+			$real_password = $res[0]['withdraw_password'];
+
+			if( md5($withdraw_password) == $real_password ){
+				return true;
+			}
+			else{
+				return '密码错误';
+			}
+		}
 
 		// 取得一个帐户某个币种的余额
 		private function get_balance($id, $currency) {

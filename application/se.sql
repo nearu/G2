@@ -41,7 +41,7 @@ CREATE TABLE log (
 	currency 		 		varchar(32),
 	amount					double,#变动的钱数额（可以为负）
 	balance 				double,#变动以后的余额
-	time					timestamp(14)
+	time					timestamp DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 

@@ -31,11 +31,19 @@
  			}
 
  			// 测试：存钱
- 			if (true) {
- 				echo '测试：存钱';
+ 			if ( false ) {
+ 				echo '测试：存钱 <br>';
  				$id = '3d3ebea629b44c2a8d3650306c3a18d3';
  				$result = $this->funds_account->save($id,'CNY',200);
- 				//$this->printMsg('test save', $result);
+ 				assert($result == true);
+ 			}
+
+ 			if( true ){
+ 				echo '测试：取钱 <br>';
+ 				$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 				$withdraw_password = '4567890123';
+ 				$result = $this->funds_account->withdraw( $id,'CNY', 200, $withdraw_password );
+ 				echo $result;
  				assert($result == true);
  			}
 
@@ -127,12 +135,12 @@
  			}
 
  			// 测试提交申请挂失
-			if(true) {
+			if(false) {
 				$result = $this->funds_account->report_loss(5);
  				$this->printMsg('test report_loss', $result);
  				assert($result == true);
  			} 			
- 			if(true) {
+ 			if(false) {
 				$result = $this->funds_account->report_cancel(5);
  				$this->printMsg('test report_cancel', $result);
  				assert($result == true);
@@ -150,7 +158,7 @@
  		}
 
  		public function index() {
- 			echo 'Hello Test!';
+ 			//echo 'Hello Test!';
  			$this->test_account();
  			$this->test_admin();
  			$this->test_log();

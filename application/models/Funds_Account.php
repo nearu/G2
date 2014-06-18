@@ -116,7 +116,9 @@
 		// 新建资金账户
 		public function new_account($account) {
 			$account['create_state'] = 0;
+			$account['id'] = md5($account['id_card_number'] . $account['customer_name']);
 			$this->db->insert('funds_account', $account);
+			return $account['id'];
 		}
 		
 		// 验证币种是否正确
@@ -199,6 +201,114 @@
 
 		}
 
+		//下面是李琛然LCR写的代码
+		//都是面向中心交易系统的API，故都加上central前缀
+
+		//中心交易系统冻结资金
+		//输入：委托单号，资金账户，币种，金额（必须为正）
+		public function central_freeze( $order_number, $id, $currency, $amount ){
+			$where = array(//检查对应委托单号是否不存在
+				'order_number' => $order_number
+				);
+			$query = $this->db->get_where('deputing_order',$where);
+			if( $query->num_rows() != 0 ){//已经存在这个委托单号了，出错
+				return false;
+			}
+
+			if( $this->manage_freeze( $id, $currency, $amount, 'freeze' ) === true ){//如果成功冻结
+				$data =  array(
+					'order_number' => $order_number,
+					'total_frozen_money' => $amount,
+					'used_money' => 0.0,
+					'currency' => $currency
+					);
+				$this->db->insert( 'deputing_order', $data );
+				return true;
+			}
+			else{//失败返回false
+				return false;
+			}
+		}
+
+		//中心交易系统通知买股票成功，扣钱。
+		//输入：委托单号，资金账户，币种，金额（必须为正）
+		public function central_spend_money( $order_number, $id, $currency, $amount ){
+			$where = array(//检查对应委托单号是否存在
+				'order_number' => $order_number
+				);
+			$query = $this->db->get_where('deputing_order',$where);
+			if( $query->num_rows() == 0 ){//不存在这个委托单号，出错
+				return false;
+			}
+
+			$this_order_array = $query->result_array();
+			$this_order = $this_order_array[0];
+			$total_frozen_money = $this_order['total_frozen_money'];
+			$old_used_money = $this_order['used_money'];
+			$old_balance = $total_frozen_money - $old_used_money;
+			if( $amount > $old_balance ){//要扣的钱大于剩余的钱
+				return false;
+			}
+
+			$new_used_money = $old_used_money + $amount;//更新已经用的钱的数额
+
+			$this->db->where( 'order_number', $order_number );
+			$data = array(
+				'used_money' => $new_used_money
+				);
+			$this->db->update( 'deputing_order', $data );//更新数据库
+
+			return true;
+		}
+
+		//中心交易系统通知卖股票成功，加钱
+		//输入：资金账户ID，币种，金额
+		public function central_add_money( $id, $currency, $amount ){
+			return $this->modify_balance( $id, $currency, $amount );
+		}
+
+		//中心交易系统解冻资金
+		//输入：委托单号，资金账户ID
+		public function central_unfreeze( $order_number, $id ){
+			$where = array(//检查对应委托单号是否存在
+				'order_number' => $order_number
+				);
+			$query = $this->db->get_where('deputing_order',$where);
+			if( $query->num_rows() == 0 ){//不存在这个委托单号，出错
+				return false;
+			}
+
+			$this_order_array = $query->result_array();
+			$this_order = $this_order_array[0];
+			$total_frozen_money = $this_order['total_frozen_money'];
+			$used_money = $this_order['used_money'];
+			$left_money = $total_frozen_money - $used_money;
+			$currency = $this_order['currency'];
+
+			$this->db->where( 'order_number', $order_number );
+			$data = array(
+				'total_frozen_money' => 0.0,
+				'used_money' => 0.0
+				);
+			$this->db->update( 'deputing_order', $data );//更新数据库
+
+			if( ! ( $this->manage_freeze( $id, $currency, $total_frozen_money, 'unfreeze' ) === true ) ){
+				//先解冻钱
+				return false;
+			}
+			if( ! ( $this->modify_balance( $id, $currency, -$used_money ) === true ) ){
+				//再把钱扣掉
+				return false;
+			}
+			if( $left_money > 0 ){
+				//钱没花完，也就是钱数增加了，需要打日志
+			}
+			
+			return true;
+		}
+
+		//以上是李琛然写的代码
+
 
 		// ---------------------------------------------------------------------------
 		// Private Functions
@@ -243,6 +353,15 @@
 						'balance'			=> $amount,
 						'frozen_balance' 	=> 0
 					));
+				$this->load->model('funds_account_log_manager');
+				$balance = $amount;
+				$log = array(
+					'funds_account_number' => $id,
+					'currency' => $currency,
+					'amount' => $amount,
+					'balance' => $balance
+					);
+				$this->funds_account_log_manager->insert_log( $log );
 			} else {
 				$result = $this->db->select('balance')->get_where('currency', $where)->result_array();
 				$pre_balance = $result[0]['balance'];
@@ -252,6 +371,16 @@
 				$this->db->update('currency', array(
 					'balance' => $pre_balance + $amount
 					));
+
+				$this->load->model('funds_account_log_manager');
+				$balance = $pre_balance + $amount;
+				$log = array(
+					'funds_account_number' => $id,
+					'currency' => $currency,
+					'amount' => $amount,
+					'balance' => $balance
+					);
+				$this->funds_account_log_manager->insert_log( $log );
 			}
 			return true;
 		}
@@ -314,6 +443,20 @@
 					'balance' => $new_balance,
 					'frozen_balance' => $new_frozen_balance,
 				));
+
+			$this->load->model('funds_account_log_manager');
+			$balance = $new_balance;
+			$amount = 0;
+			if( $type == 'freeze' ){
+				$amount = -$amount;
+			}
+			$log = array(
+				'funds_account_number' => $id,
+				'currency' => $currency,
+				'amount' => $amount,
+				'balance' => $balance
+				);
+			$this->funds_account_log_manager->insert_log( $log );
 			return true;
 		}
 

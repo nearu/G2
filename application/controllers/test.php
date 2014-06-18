@@ -1,5 +1,6 @@
 <?php
 	class Test extends CI_Controller {
+
  		function __construct() {
   			parent::__construct();
  		}
@@ -12,23 +13,63 @@
  			assert($this->funds_account->verify_currency('HKD'));
  			//assert($this->funds_account->verify_currency('USD'));
  			
- 			// 测试 new_account
- 			if (true) {
- 				echo 'create new account';
+ 			// 测试：开户
+ 			if (false) {
+ 				echo '测试：开户';
 	 			$acc = array(
 	 				'stock_account' 	=> 1, 
-	 				'trade_password' 	=> '123', 
-	 				'withdraw_password' => '456',
-	 				'id_card_number' 	=> '123456',
-	 				'customer_name' 	=> 'aaa',
+	 				'trade_password' 	=> '1234567890', 
+	 				'withdraw_password' => '4567890123',
+	 				'id_card_number' 	=> '123455432112345678',
+	 				'customer_name' 	=> '陈译',
 	 				'lost_state' 		=> 0,
 	 				'cancel_state' 		=> 0);
-	 			$this->funds_account->new_account($acc);
+	 			echo $this->funds_account->new_account($acc);
 	 			assert($this->funds_account->get_funds_account(array(
 	 					'customer_name' => $acc['customer_name']
 	 				)));
  			}
 
+ 			// 测试：存钱
+ 			if (true) {
+ 				echo '测试：存钱';
+ 				$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 				$result = $this->funds_account->save($id,'CNY',200);
+ 				//$this->printMsg('test save', $result);
+ 				assert($result == true);
+ 			}
+
+ 			if( false ){
+ 				//先新建资金账户
+ 				echo 'create new account';
+	 			$acc = array(
+	 				'stock_account_number' 	=> 1, 
+	 				'trade_password' 	=> '123', 
+	 				'withdraw_password' => '456',
+	 				'customer_name' 	=> '陈译',
+	 				'lost_state' 		=> 0,
+	 				'cancel_state' 		=> 0);
+	 			//$this->funds_account->new_account($acc);
+
+	 			$this_account;
+	 			assert($this_account = $this->funds_account->get_funds_account(array(
+	 					'customer_name' => $acc['customer_name']
+	 				)));
+
+	 			$id = $this_account[0]['id'];
+
+	 			//存钱
+	 			//$result = $this->funds_account->save( $id,'CNY',200);
+ 				//$this->printMsg('test save', $result);
+
+ 				$order_number = '8889';
+ 				$currency = 'CNY';
+ 				//assert( $this->funds_account->central_freeze( $order_number, $id, $currency, 1000 ) );
+ 				//assert( $this->funds_account->central_spend_money( $order_number, $id, $currency, 5000 ) );
+ 				assert( $this->funds_account->central_unfreeze( $order_number, $id ) );
+
+ 				//assert( $this->funds_account->central_add_money( $id, $currency, 500 ) );
+ 			}
 
 
  			// 测试 verify_trade_pwd
@@ -60,15 +101,7 @@
  			// cy的测试在下面													////
  			////////////////////////////////////////////////////////////////////////
 
- 			// 测试save,withdraw,
- 			if (false) {
- 				$result = $this->funds_account->save(5,'CNY',200);
- 				$this->printMsg('test save', $result);
- 				assert($result == true);
-				$result = $this->funds_account->withdraw(5,'HKD',600);
-				$this->printMsg('test withdraw', $result);
- 				assert($result == true);
- 			}
+ 			
 
  			// 测试freeze系列函数
  			if (false) {

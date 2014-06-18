@@ -23,7 +23,7 @@
 		// (id, true/false)
 		public function handle_register($id, $result) {
 			$result = $result ? 1 : 2;
-			$sql = "UPDATE funds_account SET create_state='" . $result . "' WHERE id=" . $id . "'";
+			$sql = "UPDATE funds_account SET create_state='" . $result . "' WHERE id='" . $id . "'";
 			$this->db->query($sql);
 		}
 
@@ -33,6 +33,7 @@
 			$result = $result ? 1 : 2;
 			$sql = "UPDATE lost_application SET state='" . $result . "' AND reply='" . $reply . 
 				"' WHERE funds_account='" . $id . "' AND state=0";
+			echo $sql;
 			$this->db->query($sql);
 		}
 
@@ -42,6 +43,7 @@
 			$result = $result ? 1 : 2;
 			$sql = "UPDATE cancel_application SET state='" . $result . "' AND reply='" . $reply . 
 				"' WHERE funds_account='" . $id . "' AND state=0";
+
 			$this->db->query($sql);	
 		}
 

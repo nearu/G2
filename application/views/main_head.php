@@ -36,13 +36,13 @@ $this->load->helper("url");
                 <a href="<?=base_url('index.php/admin/confirm_register')?>"><i class="uk-icon-th-list"></i>&nbsp;       确认开户</a>
             </li>
             <li id="lost" class="uk-parent">
-                <a href="#"><i class="uk-icon-file-text-alt"></i>&nbsp;&nbsp;&nbsp;处理挂失</a>
+                <a href="<?=base_url('index.php/admin/confirm_lost')?>"><i class="uk-icon-file-text-alt"></i>&nbsp;&nbsp;&nbsp;处理挂失</a>
             </li>
             
 
 
             <li id="cancel"     class="uk-parent">
-                <a href="#"><i class="uk-icon-external-link-sign"></i>&nbsp;&nbsp;处理销户</a>
+                <a href="<?=base_url('index.php/admin/confirm_cancel')?>"><i class="uk-icon-external-link-sign"></i>&nbsp;&nbsp;处理销户</a>
             </li>
 
             <li id="log"  class="uk-parent">

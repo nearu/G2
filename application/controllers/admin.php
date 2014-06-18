@@ -45,23 +45,52 @@ class admin extends CI_Controller {
 		$register_list 	= $this->funds_account_admin->get_register_list();
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
-			$confirm = $this->input->post("id");
-			$delete  = $this->input->post("delete");
+			$id 	 = $this->input->post("id");
+			// $delete  = $this->input->post("delete");
 			if ($confirm) {
-				// echo $confirm;
 				$this->funds_account_admin->handle_register($id, true);
+				header("Location: " . base_url('index.php/admin/confirm_register'));
+				return;
 			}
-			if ($delete) {
-				// echo $delete;
-				$this->funds_account_admin->handle_register($id, false);
-			}
+			// if ($delete) {
+			// 	// echo $delete;
+			// 	$this->funds_account_admin->handle_register($id, false);
+			// }
 		}
 		$this->load->view("main_head",array("active"=>"register"));
 		$this->load->view("confirm_register",array('users'=>$register_list));
-
-
 	}
 
+	public function confirm_lost() {
+		$lost_list  = $this->funds_account_admin->get_lost_list();
+		// echo var_dump($_POST);
+		if ($this->input->post()) {
+			$confirm = $this->input->post("confirm");
+			$id 	 = $this->input->post("id");						
+			if ($confirm) {
+				echo $id;
+				$this->funds_account_admin->handle_lost_application($id,true, 'xxx');
+				//header("Location: " . base_url('index.php/admin/confirm_lost'));
+				return;	
+			}
+		}
+		$this->load->view('main_head', array('active'=>'lost'));
+		$this->load->view("confirm_lost",array('users'=>$lost_list));
+	}
+
+	public function confirm_cancel() {
+		$cancel_list 	= $this->funds_account_admin->get_cancel_list();
+		if ($this->input->post()) {
+			$confirm = $this->input->post("confirm");
+			$id 	 = $this->input->post("id");						
+			$this->funds_account_admin->handle_cancel_application($id,true, 'xxx');
+			header("Location: " . base_url('index.php/admin/confirm_cancel'));
+			return;
+		}
+
+		$this->load->view('main_head', array('active'=>'cancel'));
+		$this->load->view("confirm_cancel",array('users'=>$cancel_list));
+	}
 	private function check_login_state($levelRequirement = 1)
     {
         $this->load->library("session");

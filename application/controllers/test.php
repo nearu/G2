@@ -19,6 +19,7 @@
  				'customer_name' 	=> '陈译',
  				'lost_state' 		=> 0,
  				'cancel_state' 		=> 0);
+ 			$this->funds_account->new_account($acc);
  			return $this->funds_account->get_funds_account(array('customer_name' => $acc['customer_name']));
  		}
 

@@ -179,7 +179,8 @@
 		// e3 余额不足
 		// e4 账户的该币种被完全冻结中
 		// e5 账号不存在
-		public function check_trade($id, $currency, $amount) {
+		// e6 交易密码错误
+		public function check_trade($id, $currency, $amount, $trade_password) {
 			if (!$this->verify_currency($currency)) 
 				return 'e1';
 			if ($this->get_funds_account(array('id'=>$id)) === false) {
@@ -195,6 +196,9 @@
 			$curr = $result->result_array();
 			if ($curr[0]['balance'] < $amount) {
 				return 'e3';
+			}
+			if( !( $this->check_trade_password( $id, $trade_password ) === true ) ){
+				return 'e6'
 			}
 			return true;
 		}
@@ -335,6 +339,26 @@
 			$real_password = $res[0]['withdraw_password'];
 
 			if( md5($withdraw_password) == $real_password ){
+				return true;
+			}
+			else{
+				return '密码错误';
+			}
+		}
+
+		private function check_trade_password( $id, $trade_password ){
+			$where = array(
+				'id' => $id
+				);
+			$query = $this->db->get_where( 'funds_account', $where );
+			if( $query->num_rows() == 0 ){
+				return '不存在这个账户';
+			}
+
+			$res = $query->result_array();
+			$real_password = $res[0]['trade_password'];
+
+			if( md5($trade_password) == $real_password ){
 				return true;
 			}
 			else{

@@ -53,3 +53,12 @@ CREATE TABLE exchange_rate (
 	currency_b	varchar(128),
 	rate 		double
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
+
+CREATE TABLE  admin (
+	id 			int NOT NULL,
+	name 		varchar(128),
+	password 	varchar(128),
+	primary key(id)
+
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;

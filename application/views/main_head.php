@@ -19,7 +19,7 @@ $this->load->helper("url");
         <nav class="uk-navbar">
             <ul class="uk-navbar-nav">            
                 <li>
-                    <a href="<?=base_url('index.php/admin/about')?>"><i class="uk-icon-home uk-icon-large"></i></a>                
+                    <a href="<?=base_url('index.php/admin/main_page')?>"><i class="uk-icon-home uk-icon-large"></i></a>                
                 </li>
                 
             </ul>

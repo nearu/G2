@@ -13,7 +13,7 @@ CREATE TABLE funds_account (
 
 
 CREATE TABLE lost_application (
-	funds_account 		int NOT NULL,
+	funds_account 		char(32) NOT NULL,
 	state				int,
 	reply				text,
 	time 				date
@@ -21,7 +21,7 @@ CREATE TABLE lost_application (
 
 
 CREATE TABLE cancel_application (
-	funds_account 		int NOT NULL,
+	funds_account 		char(32) NOT NULL,
 	state				int,
 	reply				text,
 	time 				date
@@ -29,7 +29,7 @@ CREATE TABLE cancel_application (
 
 
 CREATE TABLE currency (
-	funds_account 	int NOT NULL,
+	funds_account 	char(32) NOT NULL,
 	currency_type	varchar(32),
 	balance 		double,
 	frozen_balance 	double

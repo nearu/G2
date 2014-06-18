@@ -15,7 +15,7 @@
             <td><?=$user['time']?></td> 
             <td>
                 <form id="confirm_cancel" method="post" action="<?=base_url('index.php/admin/confirm_cancel')?>" >
-                    <input type='text' value='<?=$user['funds_account']?>' name='xxxx' >
+                    <input type='text'  name='reply' >
                     <input type='hidden' value='<?=$user['funds_account']?>' name='id' >
                     <input type='submit' class="uk-button confirm" id="<?=$user['funds_account']?>" value='确认' name='confirm'>    
                 </form>

@@ -31,7 +31,7 @@
 		// (id, true/false, "info")
 		public function handle_lost_application($id, $result, $reply) {
 			$result = $result ? 1 : 2;
-			$sql = "UPDATE lost_application SET state='" . $result . "' AND reply='" . $reply . 
+			$sql = "UPDATE lost_application SET state=" . $result . " , reply='" . $reply . 
 				"' WHERE funds_account='" . $id . "' AND state=0";
 			echo $sql;
 			$this->db->query($sql);
@@ -41,9 +41,9 @@
 		// (id, true/false, "info")
 		public function handle_cancel_application($id, $result, $reply) {
 			$result = $result ? 1 : 2;
-			$sql = "UPDATE cancel_application SET state='" . $result . "' AND reply='" . $reply . 
+			$sql = "UPDATE cancel_application SET state=" . $result . " , reply='" . $reply . 
 				"' WHERE funds_account='" . $id . "' AND state=0";
-
+			echo $sql;
 			$this->db->query($sql);	
 		}
 

@@ -48,9 +48,11 @@ $this->load->helper("url");
             <li id="log"  class="uk-parent">
                 <a href="#"><i class="uk-icon-user-md"></i>&nbsp;    历史记录</a>
             </li>
+            <!--
             <li id="set"     class="uk-parent">
                 <a href="#"><i class="uk-icon-user"></i>&nbsp;&nbsp;修改设置</a>
             </li>
+        -->
         </ul>
     </div>
     <div class="cmscontent uk-width-8-10" id="content" style="min-height:620px;">

@@ -67,9 +67,9 @@ class admin extends CI_Controller {
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
 			$id 	 = $this->input->post("id");						
+			$reply   = $this->input->post("reply");
 			if ($confirm) {
-				echo $id;
-				$this->funds_account_admin->handle_lost_application($id,true, 'xxx');
+				$this->funds_account_admin->handle_lost_application($id,true, $reply);
 				//header("Location: " . base_url('index.php/admin/confirm_lost'));
 				return;	
 			}
@@ -83,14 +83,22 @@ class admin extends CI_Controller {
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
 			$id 	 = $this->input->post("id");						
-			$this->funds_account_admin->handle_cancel_application($id,true, 'xxx');
-			header("Location: " . base_url('index.php/admin/confirm_cancel'));
+			$reply   = $this->input->post("reply");
+			$this->funds_account_admin->handle_cancel_application($id,true, $reply);
+			//header("Location: " . base_url('index.php/admin/confirm_cancel'));
 			return;
 		}
 
 		$this->load->view('main_head', array('active'=>'cancel'));
 		$this->load->view("confirm_cancel",array('users'=>$cancel_list));
 	}
+
+	public function logout() {
+		$this->session->sess_destroy();
+        header("Location: " . base_url()."index.php/admin/");
+        return ;
+	}
+
 	private function check_login_state($levelRequirement = 1)
     {
         $this->load->library("session");

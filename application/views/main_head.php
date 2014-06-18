@@ -46,7 +46,7 @@ $this->load->helper("url");
             </li>
 
             <li id="log"  class="uk-parent">
-                <a href="#"><i class="uk-icon-user-md"></i>&nbsp;    历史记录</a>
+                <a href="<?=base_url('index.php/admin/log')?>"><i class="uk-icon-user-md"></i>&nbsp; 交易记录</a>
             </li>
             <!--
             <li id="set"     class="uk-parent">

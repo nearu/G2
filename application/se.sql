@@ -1,5 +1,5 @@
 CREATE TABLE funds_account (
-	id					int NOT NULL auto_increment,
+	id					char(32),
 	stock_account		int,
 	trade_password		varchar(128),
 	withdraw_password	varchar(128),
@@ -36,15 +36,12 @@ CREATE TABLE currency (
 )ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 
-CREATE TABLE record (
-	stock_account_number 	varchar(128),
+CREATE TABLE log (
 	funds_account_number 	varchar(128),
-	currency_type 		 	varchar(32),
-	balance_before		 	double,
-	balance_after		 	double,
-	issave					boolean,
-	issuccessful			boolean,
-	time					timestamp
+	currency 		 		varchar(32),
+	amount					double,#变动的钱数额（可以为负）
+	balance 				double,#变动以后的余额
+	time					timestamp DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 
@@ -55,10 +52,20 @@ CREATE TABLE exchange_rate (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 
+
 CREATE TABLE  admin (
 	id 			int NOT NULL,
 	name 		varchar(128),
 	password 	varchar(128),
-	primary key(id)
-
+	primary key(id),
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
+#存储所有中心交易系统委托订单
+CREATE TABLE deputing_order (
+	order_number varchar(128), #委托单号
+	total_frozen_money double, #一开始被冻结的钱（这个值一直不变）
+	used_money double, #已经用掉的冻结的钱
+	currency varchar(128), #币种
+	primary key (order_number)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+

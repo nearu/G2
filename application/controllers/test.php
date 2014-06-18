@@ -88,9 +88,16 @@
  		}
  		
  		// 测试：检查交易
+		
 		// 测试：查询证券账户下的所有资金账户
+		public function test_get_acc_by_stock_acc() {
+			$result = $this->funds_account->get_acc_by_stock_acc(1);
+			return count($result) == 1;
+		}
 		// 测试：确认交易
+
 		// 测试：插入交易记录
+		
 
 
 		// 以下测试由管理员界面完成
@@ -114,7 +121,7 @@
  			$this->unit->run($this->test_report_cancel(), true, '销户', 'Yes!');
  			$this->unit->run($this->test_exchange_currency(), true, '货币兑换', 'Yes!');
  			$this->unit->run($this->test_freeze(), true, '冻结', 'Yes!');
- 			//$this->unit->run($this->(), true, '', 'Yes!');
+ 			$this->unit->run($this->test_get_acc_by_stock_acc(), true, '获取证券账户下的资金账户', 'Yes!');
  			echo $this->unit->report();
  		}
  	}

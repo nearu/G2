@@ -42,64 +42,53 @@
 
  		// 测试：修改交易密码
  		public function test_change_trade_pwd() {
- 			echo "测试：修改交易密码";
- 			assert($this->funds_account->change_trade_pwd($id, '1234567890', 'new_password'));
- 			assert($this->funds_account->change_trade_pwd($id, 'new_password', '1234567890'));
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->change_trade_pwd($id, '1234567890', 'new_password') && 
+ 				$this->funds_account->change_trade_pwd($id, 'new_password', '1234567890');
  		}
 
  		// 测试：修改取款密码
  		public function test_change_withdraw_pwd() {
- 			echo "测试：修改取款密码";
- 			assert($this->funds_account->change_withdraw_pwd($id, '4567890123', 'new_password'));
- 			assert($this->funds_account->change_withdraw_pwd($id, 'new_password', '4567890123'));
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->change_withdraw_pwd($id, '4567890123', 'new_password') && 
+ 				$this->funds_account->change_withdraw_pwd($id, 'new_password', '4567890123');
  		}
 
  		// 测试：挂失
  		public function test_report_loss() {
- 			echo "测试：挂失";
- 			assert($this->funds_account->report_loss($id));
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->report_loss($id);
  		} 		
 
- 		// 测试：补办
+ 		// 测试：销户
  		public function test_report_cancel() {
- 			echo "测试：补办";
- 			assert($this->funds_account->report_cancel($id));
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->report_cancel($id);
  		}
 
  		// 测试：货币兑换
  		public function test_exchange_currency() {
- 			assert($this->funds_account->exchange_currency($id, '4567890123', 'HKD', 'CNY', 0));
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->exchange_currency($id, '4567890123', 'HKD', 'CNY', 0);
  		}
 
- 		// 测试：销户
-
-		// 测试：查询证券账户下的所有资金账户
-		// 测试：检查交易
-		// 测试：冻结资金
-		// 测试freeze系列函数
+		// 测试：冻结
 		public function test_freeze() {
- 			if (false) {
- 				$result = $this->funds_account->freeze_all(5);
- 				$this->printMsg('test freeze_all', $result);
- 				assert($result == true);
- 			}
-
- 			if (false) {
- 				$result = $this->funds_account->unfreeze_all(5);
- 				$this->printMsg('test unfreeze_all', $result);
- 				assert($result == true);
- 			}
- 			if(false) {
-				$result = $this->funds_account->freeze(5, 'HKD', 100);
- 				$this->printMsg('test freeze', $result);
- 				assert($result == true);
- 			}
- 			if(false) {
-				$result = $this->funds_account->unfreeze(5, 'HKD', 100);
- 				$this->printMsg('test unfreeze', $result);
- 				assert($result == true);
- 			}
+			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			$bool1 = $this->funds_account->freeze_all($id);
+ 			$bool2 = $this->funds_account->unfreeze_all($id);
+ 			$bool3 = $this->funds_account->freeze($id, 'HKD', 100);
+ 			$bool4 = $this->funds_account->unfreeze($id, 'HKD', 100);
+ 			return $bool1 && $bool2 && $bool3 && $bool4;
  		}
+
+ 		// 测试：补办
+ 		public function test_reapply() {
+
+ 		}
+ 		
+ 		// 测试：检查交易
+		// 测试：查询证券账户下的所有资金账户
 		// 测试：确认交易
 		// 测试：插入交易记录
 
@@ -119,6 +108,13 @@
  			$this->unit->run($this->test_save(), true, '存钱', 'Yes!');
  			$this->unit->run($this->test_withdraw(), true, '取钱', 'Yes!');
  			$this->unit->run($this->test_verify_currency(), true, '验证币种', 'Yes!');
+ 			$this->unit->run($this->test_change_trade_pwd(), true, '修改交易密码', 'Yes!');
+ 			$this->unit->run($this->test_change_withdraw_pwd(), true, '修改取款密码', 'Yes!');
+ 			$this->unit->run($this->test_report_loss(), true, '挂失', 'Yes!');
+ 			$this->unit->run($this->test_report_cancel(), true, '销户', 'Yes!');
+ 			$this->unit->run($this->test_exchange_currency(), true, '货币兑换', 'Yes!');
+ 			$this->unit->run($this->test_freeze(), true, '冻结', 'Yes!');
+ 			//$this->unit->run($this->(), true, '', 'Yes!');
  			echo $this->unit->report();
  		}
  	}

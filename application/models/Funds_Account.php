@@ -104,6 +104,7 @@
 		// 验证交易密码
 		// 返回 true / false
 		public function verify_trade_pwd($id, $pwd) {
+			$pwd = md5($pwd);
 			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND trade_password='" . $pwd . "'";			
 			$query = $this->db->query($sql);
 			return ($query->num_rows() > 0);
@@ -112,6 +113,7 @@
 		// 验证取款密码
 		// 返回 true / false
 		public function verify_withdraw_pwd($id, $pwd) {
+			$pwd = md5($pwd);
 			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND withdraw_password='" . $pwd . "'";
 			$query = $this->db->query($sql);
 			return ($query->num_rows() > 0);
@@ -152,6 +154,7 @@
 		public function change_trade_pwd($id, $old_pwd, $new_pwd) {
 			if ($this->verify_trade_pwd($id, $old_pwd) == false)
 				return false;
+			$new_pwd = md5($new_pwd);
 			$sql = "UPDATE funds_account SET trade_password='" . $new_pwd . "' WHERE id='" . $id . "'";
 			$this->db->query($sql);
 			return true;
@@ -162,6 +165,7 @@
 		public function change_withdraw_pwd($id, $old_pwd, $new_pwd) {
 			if ($this->verify_withdraw_pwd($id, $old_pwd) == false)
 				return false;
+			$new_pwd = md5($new_pwd);
 			$sql = "UPDATE funds_account SET withdraw_password='" . $new_pwd . "' WHERE id='" . $id . "'";
 			$this->db->query($sql);
 			return true;	

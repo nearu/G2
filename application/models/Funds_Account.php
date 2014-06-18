@@ -198,7 +198,7 @@
 				return 'e3';
 			}
 			if( !( $this->verify_trade_pwd( $id, $trade_password ) === true ) ){
-				return 'e6'
+				return 'e6';
 			}
 			return true;
 		}

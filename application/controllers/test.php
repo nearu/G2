@@ -22,6 +22,19 @@
  			return $this->funds_account->get_funds_account(array('customer_name' => $acc['customer_name']));
  		}
 
+ 		// 测试：存钱
+ 		public function test_save() {
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->save($id, 'CNY', 200);
+ 		}
+
+ 		// 测试：取钱
+ 		public function test_withdraw() {
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			$withdraw_password = '4567890123';
+ 			return $this->funds_account->withdraw($id,'CNY', 200, $withdraw_password);
+ 		}
+
  		// 测试：验证币种
  		public function test_verify_currency() {
  			return $this->funds_account->verify_currency('HKD');
@@ -103,6 +116,8 @@
  			$this->load->library('unit_test');
  			$this->unit->run($this->unit_test_test(3), true, '单元测试可用', 'Yes!');
  			$this->unit->run($this->test_new_account(), true, '开户', 'Yes!');
+ 			$this->unit->run($this->test_save(), true, '存钱', 'Yes!');
+ 			$this->unit->run($this->test_withdraw(), true, '取钱', 'Yes!');
  			$this->unit->run($this->test_verify_currency(), true, '验证币种', 'Yes!');
  			echo $this->unit->report();
  		}

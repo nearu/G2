@@ -71,7 +71,7 @@ class admin extends CI_Controller {
 			$reply   = $this->input->post("reply");
 			if ($confirm) {
 				$this->funds_account_admin->handle_lost_application($id,true, $reply);
-				//header("Location: " . base_url('index.php/admin/confirm_lost'));
+				header("Location: " . base_url('index.php/admin/confirm_lost'));
 				return;	
 			}
 		}
@@ -86,7 +86,7 @@ class admin extends CI_Controller {
 			$id 	 = $this->input->post("id");						
 			$reply   = $this->input->post("reply");
 			$this->funds_account_admin->handle_cancel_application($id,true, $reply);
-			//header("Location: " . base_url('index.php/admin/confirm_cancel'));
+			header("Location: " . base_url('index.php/admin/confirm_cancel'));
 			return;
 		}
 

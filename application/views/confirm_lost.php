@@ -5,6 +5,7 @@
         <tr>
             <th>编号</th>
             <th>时间</th>
+            <th>回复</th>
             <th>操作</th>
         </tr>
     </thead>
@@ -13,13 +14,13 @@
         <tr>
             <td><?=$user['funds_account']?></td>
             <td><?=$user['time']?></td> 
+            <form id="confirm_lost" method="post" action="" >
+            <td> <input type='textarea'  name='reply' ></td>
             <td>
-                <form id="confirm_lost" method="post" action="" >
-                    <input type='text'  name='reply' >
                     <input type='hidden' value='<?=$user['funds_account']?>' name='id' >
                     <input type='submit' class="uk-button confirm" id="<?=$user['funds_account']?>" value='确认' name='confirm'>    
-                </form>
             </td>
+            </form>
         </tr>
         <?php endforeach;?>
     </tbody>

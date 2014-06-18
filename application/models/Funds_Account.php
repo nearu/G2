@@ -25,7 +25,7 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function withdraw($id, $currency, $amount, $withdraw_password) {
-			$res = $this->check_withdraw_password( $id, $withdraw_password );
+			$res = $this->verify_withdraw_pwd( $id, $withdraw_password );
 			if( !( $res === true ) ){
 				return $res;
 			}
@@ -197,7 +197,7 @@
 			if ($curr[0]['balance'] < $amount) {
 				return 'e3';
 			}
-			if( !( $this->check_trade_password( $id, $trade_password ) === true ) ){
+			if( !( $this->verify_trade_pwd( $id, $trade_password ) === true ) ){
 				return 'e6'
 			}
 			return true;
@@ -325,46 +325,6 @@
 		// ---------------------------------------------------------------------------
 		// Private Functions
 		// ---------------------------------------------------------------------------
-
-		private function check_withdraw_password( $id, $withdraw_password ){
-			$where = array(
-				'id' => $id
-				);
-			$query = $this->db->get_where( 'funds_account', $where );
-			if( $query->num_rows() == 0 ){
-				return '不存在这个账户';
-			}
-
-			$res = $query->result_array();
-			$real_password = $res[0]['withdraw_password'];
-
-			if( md5($withdraw_password) == $real_password ){
-				return true;
-			}
-			else{
-				return '密码错误';
-			}
-		}
-
-		private function check_trade_password( $id, $trade_password ){
-			$where = array(
-				'id' => $id
-				);
-			$query = $this->db->get_where( 'funds_account', $where );
-			if( $query->num_rows() == 0 ){
-				return '不存在这个账户';
-			}
-
-			$res = $query->result_array();
-			$real_password = $res[0]['trade_password'];
-
-			if( md5($trade_password) == $real_password ){
-				return true;
-			}
-			else{
-				return '密码错误';
-			}
-		}
 
 		// 取得一个帐户某个币种的余额
 		private function get_balance($id, $currency) {

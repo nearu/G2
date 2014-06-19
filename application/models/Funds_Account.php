@@ -373,7 +373,7 @@
 				$this->load->model('funds_account_log_manager');
 				$balance = $amount;
 				$log = array(
-					'funds_account_number' => $id,
+					'funds_account' => $id,
 					'currency' => $currency,
 					'amount' => $amount,
 					'balance' => $balance
@@ -392,7 +392,7 @@
 				$this->load->model('funds_account_log_manager');
 				$balance = $pre_balance + $amount;
 				$log = array(
-					'funds_account_number' => $id,
+					'funds_account' => $id,
 					'currency' => $currency,
 					'amount' => $amount,
 					'balance' => $balance
@@ -468,7 +468,7 @@
 				$amount = -$amount;
 			}
 			$log = array(
-				'funds_account_number' => $id,
+				'funds_account' => $id,
 				'currency' => $currency,
 				'amount' => $amount,
 				'balance' => $balance

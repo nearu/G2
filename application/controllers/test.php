@@ -19,6 +19,7 @@
  				'customer_name' 	=> '陈译',
  				'lost_state' 		=> 0,
  				'cancel_state' 		=> 0);
+ 			$this->funds_account->new_account($acc);
  			return $this->funds_account->get_funds_account(array('customer_name' => $acc['customer_name']));
  		}
 
@@ -75,12 +76,19 @@
 		// 测试：冻结
 		public function test_freeze() {
 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+			/*
  			$bool1 = $this->funds_account->freeze_all($id);
  			$bool2 = $this->funds_account->unfreeze_all($id);
  			$bool3 = $this->funds_account->freeze($id, 'HKD', 100);
  			$bool4 = $this->funds_account->unfreeze($id, 'HKD', 100);
- 			return $bool1 && $bool2 && $bool3 && $bool4;
+ 			return $bool1 && $bool2 && $bool3 && $bool4;*/
  		}
+
+ 		// 测试：查询证券账户下的所有资金账户
+		public function test_get_acc_by_stock_acc() {
+			$result = $this->funds_account->get_acc_by_stock_acc(1);
+			return count($result) == 1;
+		}
 
  		// 测试：补办
  		public function test_reapply() {
@@ -88,18 +96,20 @@
  		}
  		
  		// 测试：检查交易
+ 		public function test_check_trade() {
+ 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
+ 			return $this->funds_account->save($id, 'CNY', 200);
+ 			return $this->funds_account->check_trade($id, 'CNY', 200, '1234567890') && 
+ 				!$this->funds_account->check_trade($id, 'CNY', 201, '1234567890');
+ 		}
 		
-		// 测试：查询证券账户下的所有资金账户
-		public function test_get_acc_by_stock_acc() {
-			$result = $this->funds_account->get_acc_by_stock_acc(1);
-			return count($result) == 1;
-		}
+
 		// 测试：确认交易
+		public function test_confirm_trade() {
 
-		// 测试：插入交易记录
+		}
 
-
-
+		
 		// 以下测试由管理员界面完成
 		// 测试：通过挂失申请
 		// 测试：驳回挂失申请
@@ -110,6 +120,9 @@
  		public function index() {
  			$this->load->model('funds_account');
  			$this->load->library('unit_test');
+ 			
+ 			$this->db->empty_table('funds_account');
+
  			$this->unit->run($this->unit_test_test(3), true, '单元测试可用');
  			$this->unit->run($this->test_new_account(), true, '开户');
  			$this->unit->run($this->test_save(), true, '存钱');
@@ -122,6 +135,7 @@
  			$this->unit->run($this->test_exchange_currency(), true, '货币兑换');
  			$this->unit->run($this->test_freeze(), true, '冻结');
  			$this->unit->run($this->test_get_acc_by_stock_acc(), true, '获取证券账户下的资金账户');
+ 			$this->unit->run($this->test_check_trade(), true, '检查交易');
  			echo $this->unit->report();
  		}
  	}

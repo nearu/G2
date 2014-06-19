@@ -75,3 +75,5 @@ CREATE TABLE deputing_order (
 
 INSERT INTO exchange_rate VALUES ('HKD', 'CNY', 0.8);
 INSERT INTO exchange_rate VALUES ('CNY', 'HKD', 1.25);
+
+INSERT INTO admin VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3');

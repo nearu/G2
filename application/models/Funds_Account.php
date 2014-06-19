@@ -7,6 +7,16 @@
         	$this->load->database();
         }
 
+        /**
+		* 开户
+		*/
+		public function new_account($account) {
+			$account['create_state'] = 1;
+			$account['id'] = md5($account['id_card_number'] . $account['customer_name']);
+			$this->db->insert('funds_account', $account);
+			return $account['id'];
+		}
+
 		/**
 		* 存款
 		* id 用户的主键
@@ -15,8 +25,8 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function save($id, $currency, $amount) {
-			if ($amount < 0) 
-				return '存款数额不能为负！';
+			if ($amount <= 0) 
+				return '存款数额需为正值';
 			return $this->modify_balance($id, $currency, $amount);
 		}
 
@@ -35,38 +45,65 @@
 		}
 
 		/**
-		* 冻结该账户下所有的资金
-		* 如果操作成功返回true，否则返回错误信息
+		* 验证交易密码
+		* 返回 true / false
+		*/ 
+		public function verify_trade_pwd($id, $pwd) {
+			$pwd = md5($pwd);
+			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND trade_password='" . $pwd . "'";			
+			$query = $this->db->query($sql);
+			return ($query->num_rows() > 0);
+		}
+
+		/*
+		* 验证取款密码
+		* 返回 true / false
+		*/ 
+		public function verify_withdraw_pwd($id, $pwd) {
+			$pwd = md5($pwd);
+			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND withdraw_password='" . $pwd . "'";
+			$query = $this->db->query($sql);
+			return ($query->num_rows() > 0);
+		}
+
+		/*
+		* 修改交易密码
+		* 返回 true / false
 		*/
-		public function freeze_all($id) {
-			return $this->manage_freeze_all($id, 'freeze');
-		}
-		// 冻结某个账户的特定币种，amount为冻结的资金
-		public function freeze($id, $currency, $amount) {
-			return $this->manage_freeze($id, $currency,$amount,'freeze');
-		}
-
-		public function unfreeze_all($id) {
-			return $this->manage_freeze_all($id, 'unfreeze');
-
+		public function change_trade_pwd($id, $old_pwd, $new_pwd) {
+			if ($this->verify_trade_pwd($id, $old_pwd) == false)
+				return false;
+			$new_pwd = md5($new_pwd);
+			$sql = "UPDATE funds_account SET trade_password='" . $new_pwd . "' WHERE id='" . $id . "'";
+			$this->db->query($sql);
+			return true;
 		}
 
-		public function unfreeze($id, $currency, $amount) {
-			return $this->manage_freeze($id, $currency,$amount,'unfreeze');
+		/*
+		* 修改取款密码
+		* 返回 true / false
+		*/
+		public function change_withdraw_pwd($id, $old_pwd, $new_pwd) {
+			if ($this->verify_withdraw_pwd($id, $old_pwd) == false)
+				return false;
+			$new_pwd = md5($new_pwd);
+			$sql = "UPDATE funds_account SET withdraw_password='" . $new_pwd . "' WHERE id='" . $id . "'";
+			$this->db->query($sql);
+			return true;	
 		}
 
+		/*
+		* 验证币种是否正确
+		* 返回 true / false
+		*/ 
+		public function verify_currency($currency) {
+			// 所有合法币种
+			$all_currency_type = array("CNY", "HKD");
+			return in_array($currency, $all_currency_type, true);
+		}
 
 		/**
-		* 确认交易
-		* 传入amount有正负，代表增加余额(+)或减少余额(-)
-		*/
-		public function confirm_trade($id, $currency, $amount) {
-			return $this->modify_balance($id, $currency, $amount);
-		}
-
-		/**
-		* 重新开户
-		* 
+		* 补办
 		*/
 		public function reapply($account, $new_trade_pwd, $new_withdraw_pwd) {
 			if (!$this->verify_trade_pwd($account['id'],$account['trade_password'])) {
@@ -100,39 +137,6 @@
 			return $this->manage_report($id, 'cancel_application');	
 		}
 
-		// 验证交易密码
-		// 返回 true / false
-		public function verify_trade_pwd($id, $pwd) {
-			$pwd = md5($pwd);
-			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND trade_password='" . $pwd . "'";			
-			$query = $this->db->query($sql);
-			return ($query->num_rows() > 0);
-		}
-
-		// 验证取款密码
-		// 返回 true / false
-		public function verify_withdraw_pwd($id, $pwd) {
-			$pwd = md5($pwd);
-			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND withdraw_password='" . $pwd . "'";
-			$query = $this->db->query($sql);
-			return ($query->num_rows() > 0);
-		}
-
-		// 新建资金账户
-		public function new_account($account) {
-			$account['create_state'] = 0;
-			$account['id'] = md5($account['id_card_number'] . $account['customer_name']);
-			$this->db->insert('funds_account', $account);
-			return $account['id'];
-		}
-		
-		// 验证币种是否正确
-		public function verify_currency($currency) {
-			// 所有合法币种
-			$all_currency_type = array("CNY", "HKD", "EUR");
-			return in_array($currency, $all_currency_type, true);
-		}
-
 		// 兑换货币
 		public function exchange_currency($id, $withdraw_pwd, $currency_from, $currency_to, $amount) {
 			if (!$this->verify_withdraw_pwd($id, $withdraw_pwd) || 
@@ -148,56 +152,29 @@
 			return true;
 		}
 
-		// 修改交易密码
-		// 返回 true / false
-		public function change_trade_pwd($id, $old_pwd, $new_pwd) {
-			if ($this->verify_trade_pwd($id, $old_pwd) == false)
-				return false;
-			$new_pwd = md5($new_pwd);
-			$sql = "UPDATE funds_account SET trade_password='" . $new_pwd . "' WHERE id='" . $id . "'";
-			$this->db->query($sql);
-			return true;
-		}
-
-		// 修改取款密码
-		// 返回 true / false
-		public function change_withdraw_pwd($id, $old_pwd, $new_pwd) {
-			if ($this->verify_withdraw_pwd($id, $old_pwd) == false)
-				return false;
-			$new_pwd = md5($new_pwd);
-			$sql = "UPDATE funds_account SET withdraw_password='" . $new_pwd . "' WHERE id='" . $id . "'";
-			$this->db->query($sql);
-			return true;	
-		}
-
-		// 检查币种存在与否，以及余额是否足够
-		// 都满足，返回true
-		// 否则返回错误信息：
-		// e1 不支持的币种
-		// e2 币种不存在
-		// e3 余额不足
-		// e4 账户的该币种被完全冻结中
-		// e5 账号不存在
-		// e6 交易密码错误
+		/**
+		* 检查交易
+		* 返回 true / 错误信息
+		*/
 		public function check_trade($id, $currency, $amount, $trade_password) {
 			if (!$this->verify_currency($currency)) 
-				return 'e1';
+				return '不支持的币种';
 			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return 'e5';
+				return '账号不存在';
 			}
 			$result = $this->db->get_where('currency', array(
 				'funds_account' => $id,
 				'currency_type' => $currency,
 				));
 			if ($result->num_rows() == 0) {
-				return 'e2';
+				return '币种不存在';
 			}
 			$curr = $result->result_array();
 			if ($curr[0]['balance'] < $amount) {
-				return 'e3';
+				return '余额不足';
 			}
 			if( !( $this->verify_trade_pwd( $id, $trade_password ) === true ) ){
-				return 'e6';
+				return '交易密码错误';
 			}
 			return true;
 		}
@@ -484,10 +461,6 @@
 			return true;
 		}
 
-		private function delete_user($where) {
-			$this->db->delete('funds_account', $where);
-		}
-
 		// 取得汇率
 		private function get_rate($currency_from, $currency_to) {
 			if ($this->verify_currency($currency_from) && $this->verify_currency($currency_to)) {
@@ -499,10 +472,19 @@
 		}
 
 		/**
-		* 
+		* 删除用户
 		*/
 		private function delete_account($id) {
 			$this->db->delete('funds_account', array('id' => $id));
+		}
+
+		/**
+		* 验证账户是否可用
+		*/
+		private function account_activte($id) {
+			$b1 = $this->db->get_where('funds_account', array('id' => $id))->row_array();
+			$b1 = ($b1['create_state'] != 0);
+			return $b1;
 		}
 	}
 ?>

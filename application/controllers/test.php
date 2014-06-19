@@ -26,14 +26,14 @@
  		// 测试：存钱
  		public function test_save() {
  			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return $this->funds_account->save($id, 'CNY', 200);
+ 			return ($this->funds_account->save($id, 'CNY', 200) === true);
  		}
 
  		// 测试：取钱
  		public function test_withdraw() {
  			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
  			$withdraw_password = '4567890123';
- 			return $this->funds_account->withdraw($id,'CNY', 200, $withdraw_password);
+ 			return ($this->funds_account->withdraw($id,'CNY', 200, $withdraw_password) === true);
  		}
 
  		// 测试：验证币种

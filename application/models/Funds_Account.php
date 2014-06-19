@@ -75,12 +75,12 @@
 			if (!$this->verify_withdraw_pwd($account['id'],$account['withdraw_password'])) {
 				return '取款密码不正确';
 			}
-			$old_account = get_funds_account($account['id']);
+			$old_account = $this->get_funds_account(array('id' => $account['id']));
 			$old_account = $old_account[0];
 			$old_account['trade_password'] 	 = $new_trade_pwd;
 			$old_account['withdraw_password'] = $new_withdraw_pwd;
 			unset($old_account['id']);
-			$this->delete_account(array('id' => $account['id']));
+			$this->delete_account($account['id']);
 			$this->new_account($old_account);
 			return true;
 		}
@@ -496,6 +496,13 @@
 				return $res['rate'];
 			}
 			return false;
+		}
+
+		/**
+		* 
+		*/
+		private function delete_account($id) {
+			$this->db->delete('funds_account', array('id' => $id));
 		}
 	}
 ?>

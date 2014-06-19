@@ -19,8 +19,8 @@
  				'customer_name' 	=> '陈译',
  				'lost_state' 		=> 0,
  				'cancel_state' 		=> 0);
- 			$this->funds_account->new_account($acc);
- 			return $this->funds_account->get_funds_account(array('customer_name' => $acc['customer_name']));
+ 			$id = $this->funds_account->new_account($acc);
+ 			return ($this->funds_account->get_funds_account(array('id' => $id)) != false);
  		}
 
  		// 测试：存钱
@@ -85,13 +85,13 @@
 			$acc = array(
 				'id' => '3d3ebea629b44c2a8d3650306c3a18d3',
  				'stock_account' 	=> 1, 
- 				'trade_password' 	=> md5('1234567890'), 
- 				'withdraw_password' => md5('4567890123'),
+ 				'trade_password' 	=> '1234567890', 
+ 				'withdraw_password' => '4567890123',
  				'id_card_number' 	=> '123455432112345678',
  				'customer_name' 	=> '陈译',
  				'lost_state' 		=> 0,
  				'cancel_state' 		=> 0);
- 			return $this->funds_account->reapply($acc, '123', '456');
+ 			return ($this->funds_account->reapply($acc, '123', '456') === true);
  		}
  		
  		// 测试：检查交易

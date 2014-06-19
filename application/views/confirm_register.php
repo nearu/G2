@@ -20,12 +20,10 @@
                     <input type='hidden' value='<?=$user['id']?>' name='id' >
                     <input type='submit' class="uk-button confirm" id="<?=$user['id']?>" value='确认' name='confirm'>    
                 </form>
-                <!--
                 <form id="delete_register" method="post" action="" >
                     <input type='hidden' value='<?=$user['id']?>' name='id' >
                     <input type='submit' class="uk-button delete"  id="<?=$user['id']?>"  value='删除'  name='delete'>
                 </form>
-            -->
             </td>
         </tr>
         <?php endforeach;?>

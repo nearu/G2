@@ -29,11 +29,11 @@
 					</tr>
 					<tr>
 						<td><a href="<?=base_url('index.php/admin/confirm_cancel')?>">待处理销户</td></a>
-						<td>共<?=$user['lostNum']?>个</td>
+						<td>共<?=$user['cancelNum']?>个</td>
 					</tr>
 					<tr>
 						<td><a href="<?=base_url('index.php/admin/confirm_lost')?>">待处理挂失</td></a>
-						<td>共<?=$user['cancelNum']?>个</td>
+						<td>共<?=$user['lostNum']?>个</td>
 					</tr>
 					
 				</table>

@@ -47,16 +47,18 @@ class admin extends CI_Controller {
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
 			$id 	 = $this->input->post("id");
-			// $delete  = $this->input->post("delete");
+			$delete  = $this->input->post("delete");
 			if ($confirm) {
 				$this->funds_account_admin->handle_register($id, true);
 				header("Location: " . base_url('index.php/admin/confirm_register'));
 				return;
 			}
-			// if ($delete) {
-			// 	// echo $delete;
-			// 	$this->funds_account_admin->handle_register($id, false);
-			// }
+			if ($delete) {
+				// echo $delete;
+				$this->funds_account_admin->handle_register($id, false);
+				header("Location: " . base_url('index.php/admin/confirm_register'));
+				return;
+			}
 		}
 		$this->load->view("main_head",array("active"=>"register"));
 		$this->load->view("confirm_register",array('users'=>$register_list));
@@ -67,10 +69,17 @@ class admin extends CI_Controller {
 		// echo var_dump($_POST);
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
+			$delete  = $this->input->post("delet");
 			$id 	 = $this->input->post("id");						
 			$reply   = $this->input->post("reply");
 			if ($confirm) {
 				$this->funds_account_admin->handle_lost_application($id,true, $reply);
+				header("Location: " . base_url('index.php/admin/confirm_lost'));
+				return;	
+			}
+
+			if ($delete) {
+				$this->funds_account_admin->handle_lost_application($id,false,$reply);
 				header("Location: " . base_url('index.php/admin/confirm_lost'));
 				return;	
 			}
@@ -85,9 +94,17 @@ class admin extends CI_Controller {
 			$confirm = $this->input->post("confirm");
 			$id 	 = $this->input->post("id");						
 			$reply   = $this->input->post("reply");
-			$this->funds_account_admin->handle_cancel_application($id,true, $reply);
-			header("Location: " . base_url('index.php/admin/confirm_cancel'));
-			return;
+			$delete  = $this->input->post("delete");
+			if ($confirm) {
+				$this->funds_account_admin->handle_cancel_application($id,true, $reply);
+				header("Location: " . base_url('index.php/admin/confirm_cancel'));
+				return;
+			}
+			if ($delete) {
+				$this->funds_account_admin->handle_cancel_application($id,false, $reply);
+				header("Location: " . base_url('index.php/admin/confirm_cancel'));
+				return;	
+			}
 		}
 
 		$this->load->view('main_head', array('active'=>'cancel'));

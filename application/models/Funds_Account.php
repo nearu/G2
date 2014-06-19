@@ -76,13 +76,12 @@
 				return '取款密码不正确';
 			}
 			$old_account = get_funds_account($account['id']);
-			$old_account[0]['trade_password'] 	 = $new_trade_pwd;
-			$old_account[0]['withdraw_password'] = $new_withdraw_pwd;
+			$old_account = $old_account[0];
+			$old_account['trade_password'] 	 = $new_trade_pwd;
+			$old_account['withdraw_password'] = $new_withdraw_pwd;
 			unset($old_account['id']);
+			$this->delete_account(array('id' => $account['id']));
 			$this->new_account($old_account);
-			$this->delete_account(array(
-				'id' => $account['id'],
-				));
 			return true;
 		}
 
@@ -223,16 +222,16 @@
 
 		//中心交易系统冻结资金
 		//输入：委托单号，资金账户，币种，金额（必须为正）
-		public function central_freeze( $order_number, $id, $currency, $amount ){
-			$where = array(//检查对应委托单号是否不存在
-				'order_number' => $order_number
-				);
+		public function central_freeze($order_number, $id, $currency, $amount) {
+			//检查对应委托单号是否不存在
+			$where = array('order_number' => $order_number);
 			$query = $this->db->get_where('deputing_order',$where);
-			if( $query->num_rows() != 0 ){//已经存在这个委托单号了，出错
+			if($query->num_rows() != 0){
+				//已经存在这个委托单号了，出错
 				return false;
 			}
-
-			if( $this->manage_freeze( $id, $currency, $amount, 'freeze' ) === true ){//如果成功冻结
+			$res = $this->manage_freeze($id, $currency, $amount, 'freeze');
+			if($res === true ){//如果成功冻结
 				$data =  array(
 					'order_number' => $order_number,
 					'total_frozen_money' => $amount,
@@ -240,24 +239,17 @@
 					'currency' => $currency
 					);
 				$this->db->insert( 'deputing_order', $data );
-				return true;
 			}
-			else{//失败返回false
-				return false;
-			}
+			return $res;
 		}
 
 		//中心交易系统通知买股票成功，扣钱。
 		//输入：委托单号，资金账户，币种，金额（必须为正）
-		public function central_spend_money( $order_number, $id, $currency, $amount ){
-			$where = array(//检查对应委托单号是否存在
-				'order_number' => $order_number
-				);
-			$query = $this->db->get_where('deputing_order',$where);
+		public function central_spend_money($order_number, $id, $currency, $amount) {
+			$query = $this->db->get_where('deputing_order', array('order_number' => $order_number));
 			if( $query->num_rows() == 0 ){//不存在这个委托单号，出错
 				return false;
 			}
-
 			$this_order_array = $query->result_array();
 			$this_order = $this_order_array[0];
 			$total_frozen_money = $this_order['total_frozen_money'];
@@ -266,27 +258,28 @@
 			if( $amount > $old_balance ){//要扣的钱大于剩余的钱
 				return false;
 			}
-
 			$new_used_money = $old_used_money + $amount;//更新已经用的钱的数额
 
-			$this->db->where( 'order_number', $order_number );
-			$data = array(
-				'used_money' => $new_used_money
-				);
-			$this->db->update( 'deputing_order', $data );//更新数据库
+			$this->db->where('order_number', $order_number);
+			$this->db->update('deputing_order', array('used_money' => $new_used_money));//更新数据库
+
+
+			$this->db->where('funds_account', $id);
+			$this->db->where('currency_type', $currency);
+			$this->db->update('currency', array('frozen_balance' => $total_frozen_money - $new_used_money));//更新数据库			
 
 			return true;
 		}
 
 		//中心交易系统通知卖股票成功，加钱
 		//输入：资金账户ID，币种，金额
-		public function central_add_money( $id, $currency, $amount ){
+		public function central_add_money($id, $currency, $amount) {
 			return $this->modify_balance( $id, $currency, $amount );
 		}
 
 		//中心交易系统解冻资金
 		//输入：委托单号，资金账户ID
-		public function central_unfreeze( $order_number, $id ){
+		public function central_unfreeze($order_number, $id) {
 			$where = array(//检查对应委托单号是否存在
 				'order_number' => $order_number
 				);
@@ -497,7 +490,12 @@
 
 		// 取得汇率
 		private function get_rate($currency_from, $currency_to) {
-			return 1;
+			if ($this->verify_currency($currency_from) && $this->verify_currency($currency_to)) {
+				$con = array('currency_from' => $currency_from, 'currency_to' => $currency_to);
+				$res = $this->db->get_where('exchange_rate', $con)->row_array();
+				return $res['rate'];
+			}
+			return false;
 		}
 	}
 ?>

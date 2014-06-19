@@ -50,26 +50,28 @@ CREATE TABLE log (
 
 
 CREATE TABLE exchange_rate (
-	currency_a	varchar(128),
-	currency_b	varchar(128),
-	rate 		double
+	currency_from	varchar(128),
+	currency_to		varchar(128),
+	rate 			double
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 
-
-CREATE TABLE  admin (
+CREATE TABLE admin (
 	id 			int NOT NULL,
 	name 		varchar(128),
 	password 	varchar(128),
 	primary key(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
+
 #存储所有中心交易系统委托订单
 CREATE TABLE deputing_order (
-	order_number varchar(128), #委托单号
-	total_frozen_money double, #一开始被冻结的钱（这个值一直不变）
-	used_money double, #已经用掉的冻结的钱
-	currency varchar(128), #币种
+	order_number varchar(128), 	#委托单号
+	total_frozen_money double, 	#一开始被冻结的钱（这个值一直不变）
+	used_money double, 			#已经用掉的冻结的钱
+	currency varchar(128), 		#币种
 	primary key (order_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
+INSERT INTO exchange_rate VALUES ('HKD', 'CNY', 0.8);
+INSERT INTO exchange_rate VALUES ('CNY', 'HKD', 1.25);

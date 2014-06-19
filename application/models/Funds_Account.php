@@ -11,8 +11,10 @@
 		* 开户
 		*/
 		public function new_account($account) {
-			$account['create_state'] = 1;
-			$account['id'] = md5($account['id_card_number'] . $account['customer_name']);
+			$account['create_state'] = 0;
+			$account['lost_state'] = 0;
+			$account['cancel_state'] = 0;
+			$account['id'] = md5($account['id_card_number'] . $account['customer_name'] . time());
 			$this->db->insert('funds_account', $account);
 			return $account['id'];
 		}

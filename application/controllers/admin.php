@@ -4,6 +4,7 @@ class admin extends CI_Controller {
 		parent::__construct();
 		$this->load->model('funds_account_admin');
 		$this->load->model('funds_account_log_manager');
+		$this->load->model('funds_account');
 		$this->load->helper("url");
 		$this->load->library("session");
 	}
@@ -42,7 +43,67 @@ class admin extends CI_Controller {
 		$this->load->view('main_page.php', array('user' => $data));
 	}
 
-	public function confirm_register() {
+	public function confirm_register(){
+		$info = '';
+		$successful = 1;
+		if( $this->input->post() ){
+			$open = $this->input->post( "open" );
+			if( $open ){
+				$successful = 2;
+				$account = array();
+				$account['stock_account'] = $this->input->post( "stock_account" );
+				$account['trade_password'] = md5( $this->input->post( "trade_password" ) );
+				$account['withdraw_password'] = md5( $this->input->post( "withdraw_password" ) );
+				$account['id_card_number'] = $this->input->post( "id_card_number" );
+				$account['customer_name'] = $this->input->post( "customer_name" );
+				$trade_password1 = md5( $this->input->post( "trade_password1" ) );
+				$withdraw_password1 = md5( $this->input->post( "withdraw_password1" ) );
+				if( strlen($account['stock_account']) == 0 ){
+					$info = "证券账户号为空。";
+				}
+				else if( strlen($this->input->post( "trade_password" ) ) == 0 ){
+					$info = "交易密码为空。";
+				}
+				else if( strlen($this->input->post( "withdraw_password" ) ) == 0 ){
+					$info = "取款密码为空。";
+				}
+				else if( $account['trade_password'] != $trade_password1 ){
+					$info = "两次输入的交易密码不一致。";
+				}
+				else if( $account['withdraw_password'] != $withdraw_password1 ){
+					$info = "两次输入的取款密码不一致。";
+				}
+				else if( strlen($account['id_card_number']) != 18 ){
+					$info = "输入的身份证号不是18位。";
+				}
+				else if( strlen($account['customer_name']) == 0 ){
+					$info = "客户姓名为空。";
+				}
+				else{
+					$account_number = $this->funds_account->new_account( $account );
+					$info = "开户成功，新的资金账户号为 ".$account_number;
+					$successful = 3;
+				}
+			}
+		}
+		
+		$this->load->view("main_head",array("active"=>"register"));
+		$vars = array();
+		$vars['info'] = $info;
+		if( $successful == 2 ){
+			$vars['old_stock_account'] = $this->input->post( "stock_account" );
+			$vars['old_id_card_number'] = $this->input->post( "id_card_number" );
+			$vars['old_customer_name'] = $this->input->post( "customer_name" );
+		}
+		else{
+			$vars['old_stock_account'] = '';
+			$vars['old_id_card_number'] = '';
+			$vars['old_customer_name'] = '';
+		}
+		$this->load->view("confirm_register", $vars );
+	}
+
+	/*public function confirm_register() {
 		$register_list 	= $this->funds_account_admin->get_register_list();
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
@@ -62,7 +123,7 @@ class admin extends CI_Controller {
 		}
 		$this->load->view("main_head",array("active"=>"register"));
 		$this->load->view("confirm_register",array('users'=>$register_list));
-	}
+	}*/
 
 	public function confirm_lost() {
 		$lost_list  = $this->funds_account_admin->get_lost_list();
@@ -145,7 +206,21 @@ class admin extends CI_Controller {
 			$logs = $this->funds_account_log_manager->get_log( $condition );
 		}
 		$this->load->view("main_head",array("active"=>"log"));
-		$this->load->view("log", array( "logs" => $logs ) );
+		$vars = array();
+		$vars['logs'] = $logs;
+		if ($this->input->post()){
+			$vars['old_id'] = $this->input->post("id");
+			$vars['old_currency'] = $this->input->post("currency");
+			$vars['old_date'] = $this->input->post("date");
+			$vars['old_increase'] = $this->input->post("increase");
+		}
+		else{
+			$vars['old_id'] = '';
+			$vars['old_currency'] = '';
+			$vars['old_date'] = '';
+			$vars['old_increase'] = 'both';
+		}
+		$this->load->view("log", $vars );
 	}
 
 	private function check_login_state($levelRequirement = 1)

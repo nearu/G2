@@ -1,6 +1,8 @@
 <?php
 	class Test extends CI_Controller {
 
+		static $id = 0;
+
  		function __construct() {
   			parent::__construct();
  		}
@@ -19,21 +21,19 @@
  				'customer_name' 	=> '陈译',
  				'lost_state' 		=> 0,
  				'cancel_state' 		=> 0);
- 			$id = $this->funds_account->new_account($acc);
- 			return ($this->funds_account->get_funds_account(array('id' => $id)) != false);
+ 			self::$id = $this->funds_account->new_account($acc);
+ 			return ($this->funds_account->get_funds_account(array('id' => self::$id)) != false);
  		}
 
  		// 测试：存钱
  		public function test_save() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return ($this->funds_account->save($id, 'CNY', 200) === true);
+ 			return ($this->funds_account->save(self::$id, 'CNY', 200) === true);
  		}
 
  		// 测试：取钱
  		public function test_withdraw() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
  			$withdraw_password = '4567890123';
- 			return ($this->funds_account->withdraw($id,'CNY', 200, $withdraw_password) === true);
+ 			return ($this->funds_account->withdraw(self::$id,'CNY', 200, $withdraw_password) === true);
  		}
 
  		// 测试：验证币种
@@ -43,35 +43,30 @@
 
  		// 测试：修改交易密码
  		public function test_change_trade_pwd() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return $this->funds_account->change_trade_pwd($id, '1234567890', 'new_password') && 
- 				$this->funds_account->change_trade_pwd($id, 'new_password', '1234567890');
+ 			return $this->funds_account->change_trade_pwd(self::$id, '1234567890', 'new_password') && 
+ 				$this->funds_account->change_trade_pwd(self::$id, 'new_password', '1234567890');
  		}
 
  		// 测试：修改取款密码
  		public function test_change_withdraw_pwd() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return $this->funds_account->change_withdraw_pwd($id, '4567890123', 'new_password') && 
- 				$this->funds_account->change_withdraw_pwd($id, 'new_password', '4567890123');
+ 			return $this->funds_account->change_withdraw_pwd(self::$id, '4567890123', 'new_password') && 
+ 				$this->funds_account->change_withdraw_pwd(self::$id, 'new_password', '4567890123');
  		}
 
  		// 测试：挂失
  		public function test_report_loss() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return $this->funds_account->report_loss($id);
+ 			return $this->funds_account->report_loss(self::$id);
  		} 		
 
  		// 测试：销户
  		public function test_report_cancel() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return $this->funds_account->report_cancel($id);
+ 			return $this->funds_account->report_cancel(self::$id);
  		}
 
  		// 测试：货币兑换
  		public function test_exchange_currency() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			$this->funds_account->save($id, 'HKD', 200);
- 			return ($this->funds_account->exchange_currency($id, '4567890123', 'HKD', 'CNY', 200) === true);
+ 			$this->funds_account->save(self::$id, 'HKD', 200);
+ 			return ($this->funds_account->exchange_currency(self::$id, '4567890123', 'HKD', 'CNY', 200) === true);
  		}
 
  		// 测试：查询证券账户下的所有资金账户
@@ -83,7 +78,7 @@
  		// 测试：补办
  		public function test_reapply() {
 			$acc = array(
-				'id' => '3d3ebea629b44c2a8d3650306c3a18d3',
+				'id' => self::$id,
  				'stock_account' 	=> 1, 
  				'trade_password' 	=> '1234567890', 
  				'withdraw_password' => '4567890123',
@@ -96,15 +91,13 @@
  		
  		// 测试：检查交易
  		public function test_check_trade() {
- 			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
- 			return ($this->funds_account->check_trade($id, 'CNY', 160, '1234567890') === true);
+ 			return ($this->funds_account->check_trade(self::$id, 'CNY', 160, '1234567890') === true);
  		}
 		
 		// 测试：冻结
 		public function test_central_freeze() {
-			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
-			$this->funds_account->central_freeze(1, $id, 'CNY', 160);
-			$result = $this->db->get_where('currency', array('funds_account' => $id, 'currency_type' => 'CNY'))->row_array();
+			$this->funds_account->central_freeze(1, self::$id, 'CNY', 160);
+			$result = $this->db->get_where('currency', array('funds_account' => self::$id, 'currency_type' => 'CNY'))->row_array();
 			return $result['frozen_balance'] == 160;
 			/*
  			$bool1 = $this->funds_account->freeze_all($id);
@@ -116,8 +109,7 @@
 
 		// 测试：确认交易
 		public function test_central_spend_money() {
-			$id = '3d3ebea629b44c2a8d3650306c3a18d3';
-			return ($this->funds_account->central_spend_money(1, $id, 'CNY', 160) === true);
+			return ($this->funds_account->central_spend_money(1, self::$id, 'CNY', 160) === true);
 		}
 
 		
@@ -149,7 +141,7 @@
  			$this->unit->run($this->test_check_trade(), true, '检查交易');
  			$this->unit->run($this->test_central_freeze(), true, '冻结');
  			$this->unit->run($this->test_central_spend_money(), true, '确认交易');
- 			$this->unit->run($this->test_reapply(), true, '补办');
+ 			//$this->unit->run($this->test_reapply(), true, '补办');
  			echo $this->unit->report();
  		}
  	}

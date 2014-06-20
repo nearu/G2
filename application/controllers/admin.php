@@ -172,6 +172,27 @@ class admin extends CI_Controller {
 		$this->load->view("confirm_cancel",array('users'=>$cancel_list));
 	}
 
+
+	public function display_fund_account() {
+		if ($this->input->post()) {
+			$id = $this->input->post('fund_account');
+			$account = $this->funds_account->get_funds_account(array('id'=>$id));
+			if ($account) {
+				$account = $account[0];
+
+				$currency_array = $this->funds_account->get_currency_array($id);
+				$this->load->view('main_head', array('active'=>'display_fund_account'));
+				$this->load->view('display_currency', array(
+					'acc' => $account,
+					'curs' => $currency_array
+					));		
+				return;		
+			}
+		}
+		$this->load->view('main_head', array('active'=>'display_fund_account'));
+		$this->load->view('display_fund_account');
+	}
+
 	public function logout() {
 		$this->session->sess_destroy();
         header("Location: " . base_url()."index.php/admin/");
@@ -223,6 +244,9 @@ class admin extends CI_Controller {
 		$this->load->view("log", $vars );
 	}
 
+	//////////////////////////////////////////////////////////////////
+	// private function 											//
+	//////////////////////////////////////////////////////////////////
 	private function check_login_state($levelRequirement = 1)
     {
         $this->load->library("session");
@@ -236,5 +260,7 @@ class admin extends CI_Controller {
         }
         return false;
     }
+
+
 }
 ?>

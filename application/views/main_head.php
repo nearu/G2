@@ -32,6 +32,9 @@ $this->load->helper("url");
     </div>
     <div class="adminmenuwrap uk-width-2-10" >
         <ul class="uk-nav uk-nav-side uk-nav-parent-icon " data-uk-nav>
+            <li id="display_fund_account"     class="uk-parent">
+                <a href="<?=base_url('index.php/admin/display_fund_account')?>"><i class="uk-icon-user"></i>&nbsp;&nbsp;查询账户</a>
+            </li>
             <li id="register" class="uk-parent">
                 <a href="<?=base_url('index.php/admin/confirm_register')?>"><i class="uk-icon-th-list"></i>&nbsp;       确认开户</a>
             </li>
@@ -48,11 +51,8 @@ $this->load->helper("url");
             <li id="log"  class="uk-parent">
                 <a href="<?=base_url('index.php/admin/log')?>"><i class="uk-icon-user-md"></i>&nbsp; 交易记录</a>
             </li>
-            <!--
-            <li id="set"     class="uk-parent">
-                <a href="#"><i class="uk-icon-user"></i>&nbsp;&nbsp;修改设置</a>
-            </li>
-        -->
+
+        
         </ul>
     </div>
     <div class="cmscontent uk-width-8-10" id="content" style="min-height:620px;">

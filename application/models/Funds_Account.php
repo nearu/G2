@@ -196,6 +196,12 @@
 
 		}
 
+
+		public function get_currency_array($id) {
+			$result = $this->db->get_where('currency', array('funds_account'=>$id));
+			return $result->result_array();
+		}
+
 		//下面是李琛然LCR写的代码
 		//都是面向中心交易系统的API，故都加上central前缀
 

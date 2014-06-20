@@ -14,6 +14,7 @@
 
 		//condition是一个数组
 		public function get_log( $condition ) {
+			
 			$this->db->where( $condition );
 			$query = $this->db->get( 'log' );
 

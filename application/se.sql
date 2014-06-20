@@ -50,19 +50,19 @@ CREATE TABLE log (
 
 
 CREATE TABLE exchange_rate (
-	currency_a	varchar(128),
-	currency_b	varchar(128),
-	rate 		double
+	currency_from	varchar(128),
+	currency_to		varchar(128),
+	rate 			double
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 
-
-CREATE TABLE  admin (
+CREATE TABLE admin (
 	id 			int NOT NULL,
 	name 		varchar(128),
 	password 	varchar(128),
 	primary key(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
+
 
 #存储所有中心交易系统委托订单
 CREATE TABLE deputing_order (
@@ -73,3 +73,7 @@ CREATE TABLE deputing_order (
 	primary key (order_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
+INSERT INTO exchange_rate VALUES ('HKD', 'CNY', 0.8);
+INSERT INTO exchange_rate VALUES ('CNY', 'HKD', 1.25);
+
+INSERT INTO admin VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3');

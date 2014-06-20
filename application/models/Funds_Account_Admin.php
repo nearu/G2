@@ -22,7 +22,7 @@
 		// 管理员确认开户
 		// (id, true/false)
 		public function handle_register($id, $result) {
-			$result = $result ? 1 : 2;
+			$result = $result ? 0 : 2;
 			$sql = "UPDATE funds_account SET create_state='" . $result . "' WHERE id='" . $id . "'";
 			$this->db->query($sql);
 		}

@@ -56,4 +56,4 @@
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         <input type="hidden" name="open" value="1" />
         <input type="submit" value="开户" />
-    </form>
+</form>

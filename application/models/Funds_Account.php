@@ -28,7 +28,7 @@
 		*/
 		public function save($id, $currency, $amount) {
 			if ($amount <= 0) 
-				return '存款数额需为正值';
+				return '存款数额需为正值。';
 			return $this->modify_balance($id, $currency, $amount);
 		}
 
@@ -42,7 +42,7 @@
 				return $res;
 			}
 			if ($amount < 0) 
-				return '取款数额不能为负！';
+				return '取款数额不能为负。';
 			return $this->modify_balance($id, $currency, -$amount);
 		}
 
@@ -65,7 +65,12 @@
 			$pwd = md5($pwd);
 			$sql = "SELECT * FROM funds_account WHERE id='" . $id . "' AND withdraw_password='" . $pwd . "'";
 			$query = $this->db->query($sql);
-			return ($query->num_rows() > 0);
+			if( $query->num_rows() > 0 ){
+				return true;
+			}
+			else{
+				return "取款密码错误。";
+			}
 		}
 
 		/*
@@ -100,7 +105,7 @@
 		*/ 
 		public function verify_currency($currency) {
 			// 所有合法币种
-			$all_currency_type = array("CNY", "HKD");
+			$all_currency_type = array( 'CNY', 'USD', 'EUR', 'JPY', 'HKD', 'GBP', 'CAD', 'AUD', 'CHF', 'SGD' );
 			return in_array($currency, $all_currency_type, true);
 		}
 
@@ -329,18 +334,18 @@
 		// e5 账号不存在
 		private function modify_balance($id, $currency, $amount) {
 			if (!$this->verify_currency($currency)) 
-				return 'e1';
+				return '不支持该币种。';
 			$where = array(
 				'funds_account' => $id,
 				'currency_type' => $currency,
 				);
 			if ($this->get_funds_account(array('id'=>$id)) === false) {
-				return 'e5';
+				return '账号不存在。';
 			}
 			$query = $this->db->get_where('currency',$where);
 			if ($query->num_rows() == 0) {
 				if ($amount < 0) {
-					return 'e2';
+					return '该账号下该币种不存在。';
 				}
 				$this->db->insert('currency', array(
 						'funds_account' 	=> $id,
@@ -361,7 +366,7 @@
 				$result = $this->db->select('balance')->get_where('currency', $where)->result_array();
 				$pre_balance = $result[0]['balance'];
 				if ($pre_balance + $amount < 0)
-					return 'e3';
+					return '该账户余额不足。';
 				$this->db->where($where);
 				$this->db->update('currency', array(
 					'balance' => $pre_balance + $amount

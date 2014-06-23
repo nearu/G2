@@ -66,10 +66,11 @@ CREATE TABLE admin (
 
 #存储所有中心交易系统委托订单
 CREATE TABLE deputing_order (
-	order_number varchar(128), 	#委托单号
-	total_frozen_money double, 	#一开始被冻结的钱（这个值一直不变）
-	used_money double, 			#已经用掉的冻结的钱
-	currency varchar(128), 		#币种
+	order_number 			varchar(128), 	#委托单号
+	funds_account 			char(32) NOT NULL,
+	total_frozen_money 		double, 	#一开始被冻结的钱（这个值一直不变）
+	used_money 				double, 			#已经用掉的冻结的钱
+	currency 				varchar(128), 		#币种
 	primary key (order_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 

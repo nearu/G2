@@ -224,6 +224,7 @@
 			if($res === true ){//如果成功冻结
 				$data =  array(
 					'order_number' => $order_number,
+					'funds_account' => $id,
 					'total_frozen_money' => $amount,
 					'used_money' => 0.0,
 					'currency' => $currency
@@ -234,14 +235,15 @@
 		}
 
 		//中心交易系统通知买股票成功，扣钱。
-		//输入：委托单号，资金账户，币种，金额（必须为正）
-		public function central_spend_money($order_number, $id, $currency, $amount) {
+		//输入：委托单号，币种，金额（必须为正）
+		public function central_spend_money($order_number, $currency, $amount) {
 			$query = $this->db->get_where('deputing_order', array('order_number' => $order_number));
 			if( $query->num_rows() == 0 ){//不存在这个委托单号，出错
 				return false;
 			}
 			$this_order_array = $query->result_array();
 			$this_order = $this_order_array[0];
+			$id = $this_order['funds_account'];
 			$total_frozen_money = $this_order['total_frozen_money'];
 			$old_used_money = $this_order['used_money'];
 			$old_balance = $total_frozen_money - $old_used_money;
@@ -269,7 +271,7 @@
 
 		//中心交易系统解冻资金
 		//输入：委托单号，资金账户ID
-		public function central_unfreeze($order_number, $id) {
+		public function central_unfreeze($order_number) {
 			$where = array(//检查对应委托单号是否存在
 				'order_number' => $order_number
 				);
@@ -280,6 +282,7 @@
 
 			$this_order_array = $query->result_array();
 			$this_order = $this_order_array[0];
+			$id = $this_order['funds_account'];
 			$total_frozen_money = $this_order['total_frozen_money'];
 			$used_money = $this_order['used_money'];
 			$left_money = $total_frozen_money - $used_money;

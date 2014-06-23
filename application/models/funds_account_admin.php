@@ -3,7 +3,7 @@
 
 		function __construct() {
         	parent::__construct();
-        	$this->load->database();
+        	$this->load->database('g2');
         }
 
         // 管理员登录验证，验证成功则返回true， 否则返回false

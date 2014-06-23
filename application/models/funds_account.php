@@ -4,7 +4,7 @@
 
 		function __construct() {
         	parent::__construct();
-        	$this->load->database();
+        	$this->load->database('g2');
         }
 
         /**

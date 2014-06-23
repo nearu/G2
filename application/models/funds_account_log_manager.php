@@ -3,7 +3,7 @@
 
 		function __construct() {
         	parent::__construct();
-        	$this->load->database();
+        	$this->load->database('g2');
         }
 
         //log是一个数组

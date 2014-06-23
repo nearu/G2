@@ -36,7 +36,7 @@ $this->load->helper("url");
                 <a href="<?=base_url('index.php/admin/display_fund_account')?>"><i class="uk-icon-user"></i>&nbsp;&nbsp;查询账户</a>
             </li>
             <li id="register" class="uk-parent">
-                <a href="<?=base_url('index.php/admin/confirm_register')?>"><i class="uk-icon-th-list"></i>&nbsp;       确认开户</a>
+                <a href="<?=base_url('index.php/admin/confirm_register')?>"><i class="uk-icon-th-list"></i>&nbsp;       开户</a>
             </li>
             <li id="lost" class="uk-parent">
                 <a href="<?=base_url('index.php/admin/confirm_lost')?>"><i class="uk-icon-file-text-alt"></i>&nbsp;&nbsp;&nbsp;处理挂失</a>
@@ -52,6 +52,13 @@ $this->load->helper("url");
                 <a href="<?=base_url('index.php/admin/log')?>"><i class="uk-icon-user-md"></i>&nbsp; 交易记录</a>
             </li>
 
+            <li id="save"  class="uk-parent">
+                <a href="<?=base_url('index.php/admin/save')?>"><i class="uk-icon-user-md"></i>&nbsp; 存款</a>
+            </li>
+
+            <li id="withdraw"  class="uk-parent">
+                <a href="<?=base_url('index.php/admin/withdraw')?>"><i class="uk-icon-user-md"></i>&nbsp; 取款</a>
+            </li>
         
         </ul>
     </div>

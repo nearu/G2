@@ -43,6 +43,104 @@ class admin extends CI_Controller {
 		$this->load->view('main_page.php', array('user' => $data));
 	}
 
+	public function save(){
+		$info = '';
+		$successful = 1;
+		if( $this->input->post() ){
+			$successful = 2;
+			$id = $this->input->post( "id" );
+			$currency = $this->input->post( "currency" );
+			$amount = $this->input->post( "amount" );
+			if( strlen($id) == 0 ){
+				$info = "资金账户号为空。";
+			}
+			else if( strlen($currency) == 0 ){
+				$info = "币种为空。";
+			}
+			else if( strlen($amount) == 0 ){
+				$info = "金额为空。";
+			}
+			else if( !is_numeric($amount) ){
+				$info = "金额必须为数字。";
+			}
+			else{
+				$result = $this->funds_account->save( $id, $currency, $amount );
+				if( $result === true ){
+					$info = "存款成功。";
+					$successful = 3;
+				}
+				else{
+					$info = $result;
+				}
+			}
+		}
+		$vars = array();
+		$vars['info'] = $info;
+		if( $successful == 2 ){
+			$vars['old_id'] = $this->input->post( "id" );
+			$vars['old_currency'] = $this->input->post( "currency" );
+			$vars['old_amount'] = $this->input->post( "amount" );
+		}
+		else{
+			$vars['old_id'] = '';
+			$vars['old_currency'] = '';
+			$vars['old_amount'] = '';
+		}
+		$this->load->view("main_head",array("active"=>"save"));
+		$this->load->view("save", $vars );
+	}
+
+	public function withdraw(){
+		$info = '';
+		$successful = 1;
+		if( $this->input->post() ){
+			$successful = 2;
+			$id = $this->input->post( "id" );
+			$currency = $this->input->post( "currency" );
+			$amount = $this->input->post( "amount" );
+			$withdraw_password = $this->input->post( "withdraw_password" );
+			if( strlen($id) == 0 ){
+				$info = "资金账户号为空。";
+			}
+			else if( strlen($currency) == 0 ){
+				$info = "币种为空。";
+			}
+			else if( strlen($amount) == 0 ){
+				$info = "金额为空。";
+			}
+			else if( !is_numeric($amount) ){
+				$info = "金额必须为数字。";
+			}
+			else if( strlen( $this->input->post( "withdraw_password" ) ) == 0 ){
+				$info = "取款密码为空。";
+			}
+			else{
+				$result = $this->funds_account->withdraw( $id, $currency, $amount, $withdraw_password );
+				if( $result === true ){
+					$info = "取款成功。";
+					$successful = 3;
+				}
+				else{
+					$info = $result;
+				}
+			}
+		}
+		$vars = array();
+		$vars['info'] = $info;
+		if( $successful == 2 ){
+			$vars['old_id'] = $this->input->post( "id" );
+			$vars['old_currency'] = $this->input->post( "currency" );
+			$vars['old_amount'] = $this->input->post( "amount" );
+		}
+		else{
+			$vars['old_id'] = '';
+			$vars['old_currency'] = '';
+			$vars['old_amount'] = '';
+		}
+		$this->load->view("main_head",array("active"=>"withdraw"));
+		$this->load->view("withdraw", $vars );
+	}
+
 	public function confirm_register(){
 		$info = '';
 		$successful = 1;

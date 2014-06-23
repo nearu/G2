@@ -169,7 +169,7 @@ class admin extends CI_Controller {
 		}
 
 		$this->load->view('main_head', array('active'=>'cancel'));
-		$this->load->view("confirm_cancel",array('users'=>$cancel_list));
+		$this->load->view('confirm_cancel',array('users'=>$cancel_list));
 	}
 
 

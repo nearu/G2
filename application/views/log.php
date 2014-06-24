@@ -18,8 +18,10 @@
             <option value="SGD" <?php if( $old_currency == 'SGD' ) echo 'selected="selected"'; ?> >SGD</option>
         </select>
         <br><br>
-        时间：
-        <input type="date" name="date" <?php if( strlen($old_date) != 0 ) echo 'value="'.$old_date.'"'; ?>/>
+        时间 从：
+        <input type="date" name="date1" <?php if( strlen($old_date1) != 0 ) echo 'value="'.$old_date1.'"'; ?>/>
+             到：
+        <input type="date" name="date2" <?php if( strlen($old_date2) != 0 ) echo 'value="'.$old_date2.'"'; ?>/>
         <br><br>
         不限<input type="radio" <?php if( $old_increase == 'both' ) echo 'checked="checked"'; ?> name="increase" value="both" />
         &nbsp&nbsp&nbsp转入<input type="radio" <?php if( $old_increase == 'increase' ) echo 'checked="checked"'; ?> name="increase" value="increase" />

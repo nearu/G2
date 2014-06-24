@@ -302,7 +302,8 @@ class admin extends CI_Controller {
 		if ($this->input->post()) {
 			$id = $this->input->post("id");
 			$currency = $this->input->post("currency");
-			$date = $this->input->post("date");
+			$date1 = $this->input->post("date1");
+			$date2 = $this->input->post("date2");
 			$increase = $this->input->post("increase");
 
 			$condition = array();
@@ -312,8 +313,11 @@ class admin extends CI_Controller {
 			if( strlen($currency) > 0 ){
 				$condition['currency'] = $currency;
 			}
-			if( strlen($date) > 0 ){
-				$condition['time like'] = $currency."%";
+			if( strlen($date1) > 0 ){
+				$condition['time >'] = $date1." 00:00:00";
+			}
+			if( strlen($date2) > 0 ){
+				$condition['time <'] = $date2." 23:59:59";
 			}
 			if( $increase == 'increase' ){
 				$condition['amount >'] = 0;
@@ -330,13 +334,15 @@ class admin extends CI_Controller {
 		if ($this->input->post()){
 			$vars['old_id'] = $this->input->post("id");
 			$vars['old_currency'] = $this->input->post("currency");
-			$vars['old_date'] = $this->input->post("date");
+			$vars['old_date1'] = $this->input->post("date1");
+			$vars['old_date2'] = $this->input->post("date2");
 			$vars['old_increase'] = $this->input->post("increase");
 		}
 		else{
 			$vars['old_id'] = '';
 			$vars['old_currency'] = '';
-			$vars['old_date'] = '';
+			$vars['old_date1'] = '';
+			$vars['old_date2'] = '';
 			$vars['old_increase'] = 'both';
 		}
 		$this->load->view("log", $vars );

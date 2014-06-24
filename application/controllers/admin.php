@@ -314,10 +314,10 @@ class admin extends CI_Controller {
 				$condition['currency'] = $currency;
 			}
 			if( strlen($date1) > 0 ){
-				$condition['time >'] = $date1." 00:00:00";
+				$condition['time >='] = $date1." 00:00:00";
 			}
 			if( strlen($date2) > 0 ){
-				$condition['time <'] = $date2." 23:59:59";
+				$condition['time <='] = $date2." 23:59:59";
 			}
 			if( $increase == 'increase' ){
 				$condition['amount >'] = 0;

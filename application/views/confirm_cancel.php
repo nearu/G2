@@ -1,6 +1,5 @@
 <script type="text/javascript">
 function getReply(form_id, reply_id) {
-    alert(form_id);
     form = document.getElementById(form_id);
     reply  = document.getElementById('reply');
     input_reply = document.getElementById(reply_id);

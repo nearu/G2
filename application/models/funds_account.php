@@ -266,6 +266,17 @@
 
 		// 兑换货币
 		public function exchange_currency($id, $withdraw_pwd, $currency_from, $currency_to, $amount) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能兑换货币。";
+				case 2:
+					return "该账户已申请挂失，不能兑换货币。";
+				case 3:
+					return "该账户已销户，不能兑换货币。";
+				case 4:
+					return "该账户已挂失，不能兑换货币。";
+			}
 			if( !( $this->verify_withdraw_pwd($id, $withdraw_pwd) === true ) ){
 				return "取款密码不正确。";
 			}
@@ -455,10 +466,10 @@
 				$result = $result->result_array();
 				foreach( $result as $currency ){
 					if( ( $currency['balance'] + $currency['frozen_balance'] ) != 0 ){
-						return false;
+						return true;
 					}
 				}
-				return true;
+				return false;
 			}
 			else{
 				return false;

@@ -228,17 +228,19 @@ class admin extends CI_Controller {
 		// echo var_dump($_POST);
 		if ($this->input->post()) {
 			$confirm = $this->input->post("confirm");
-			$delete  = $this->input->post("delet");
+			$delete  = $this->input->post("delete");
 			$id 	 = $this->input->post("id");						
 			$reply   = $this->input->post("reply");
 			if ($confirm) {
 				$this->funds_account_admin->handle_lost_application($id,true, $reply);
+				$this->funds_account->confirm_lost( $id, true );
 				header("Location: " . base_url('index.php/admin/confirm_lost'));
 				return;	
 			}
 
 			if ($delete) {
 				$this->funds_account_admin->handle_lost_application($id,false,$reply);
+				$this->funds_account->confirm_lost( $id, false );
 				header("Location: " . base_url('index.php/admin/confirm_lost'));
 				return;	
 			}
@@ -256,11 +258,13 @@ class admin extends CI_Controller {
 			$delete  = $this->input->post("delete");
 			if ($confirm) {
 				$this->funds_account_admin->handle_cancel_application($id,true, $reply);
+				$this->funds_account->confirm_cancel( $id, true );
 				header("Location: " . base_url('index.php/admin/confirm_cancel'));
 				return;
 			}
 			if ($delete) {
 				$this->funds_account_admin->handle_cancel_application($id,false, $reply);
+				$this->funds_account->confirm_cancel( $id, false );
 				header("Location: " . base_url('index.php/admin/confirm_cancel'));
 				return;	
 			}

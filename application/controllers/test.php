@@ -19,8 +19,7 @@
  				'withdraw_password' => md5('4567890123'),
  				'id_card_number' 	=> '123455432112345678',
  				'customer_name' 	=> '陈译',
- 				'lost_state' 		=> 0,
- 				'cancel_state' 		=> 0);
+ 				'state' 		=> 0);
  			self::$id = $this->funds_account->new_account($acc);
  			return ($this->funds_account->get_funds_account(array('id' => self::$id)) != false);
  		}
@@ -84,8 +83,7 @@
  				'withdraw_password' => '4567890123',
  				'id_card_number' 	=> '123455432112345678',
  				'customer_name' 	=> '陈译',
- 				'lost_state' 		=> 0,
- 				'cancel_state' 		=> 0);
+ 				'state' 		=> 0);
  			return ($this->funds_account->reapply($acc, '123', '456') === true);
  		}
  		

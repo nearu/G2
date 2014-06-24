@@ -1,13 +1,12 @@
 CREATE TABLE funds_account (
 	id					char(32),
-	stock_account		int,
+	stock_account		varchar(128),
 	trade_password		varchar(128),
 	withdraw_password	varchar(128),
 	id_card_number 		varchar(128),
 	customer_name 		varchar(128),
-	create_state		int,
-	lost_state			int,
-	cancel_state		int,
+	state 				int,
+	#  0,正常 1,销户申请中 2,挂失申请中 3,已销户 4,已挂失，待补办
 	primary key(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 

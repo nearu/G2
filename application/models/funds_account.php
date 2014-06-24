@@ -7,13 +7,59 @@
         	$this->load->database();
         }
 
+        //得到账户的状态信息
+        public function get_account_state( $id ){
+        	$result = $this->db->get_where('funds_account', array('id'=>$id));
+        	if( $result ){
+        		$res = $result->result_array();
+        		return $res[0]['state'];
+        	}
+			else{
+				return "账户不存在。";
+			}
+        }
+
+        //接受挂失请求或者拒绝挂失请求
+        public function confirm_lost( $id, $is_accepted ){
+        	if( $is_accepted ){
+        		$this->db->where( 'id', $id );
+				$account = array(
+					'state' => 4
+					);
+				$this->db->update( 'funds_account', $account );
+        	}
+        	else{
+        		$this->db->where( 'id', $id );
+				$account = array(
+					'state' => 0
+					);
+				$this->db->update( 'funds_account', $account );
+        	}
+        }
+
+        //接受销户请求或者拒绝销户请求
+        public function confirm_cancel( $id, $is_accepted ){
+        	if( $is_accepted ){
+        		$this->db->where( 'id', $id );
+				$account = array(
+					'state' => 3
+					);
+				$this->db->update( 'funds_account', $account );
+        	}
+        	else{
+        		$this->db->where( 'id', $id );
+				$account = array(
+					'state' => 0
+					);
+				$this->db->update( 'funds_account', $account );
+        	}
+        }
+
         /**
 		* 开户
 		*/
 		public function new_account($account) {
-			$account['create_state'] = 0;
-			$account['lost_state'] = 0;
-			$account['cancel_state'] = 0;
+			$account['state'] = 0;
 			$account['id'] = md5($account['id_card_number'] . $account['customer_name'] . time());
 			$this->db->insert('funds_account', $account);
 			return $account['id'];
@@ -27,6 +73,17 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function save($id, $currency, $amount) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能存款。";
+				case 2:
+					return "该账户已申请挂失，不能存款。";
+				case 3:
+					return "该账户已销户，不能存款。";
+				case 4:
+					return "该账户已挂失，不能存款。";
+			}
 			if ($amount <= 0) 
 				return '存款数额需为正值。';
 			return $this->modify_balance($id, $currency, $amount);
@@ -37,6 +94,17 @@
 		* 如果操作成功返回true，否则返回错误信息
 		*/
 		public function withdraw($id, $currency, $amount, $withdraw_password) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能取款。";
+				case 2:
+					return "该账户已申请挂失，不能取款。";
+				case 3:
+					return "该账户已销户，不能取款。";
+				case 4:
+					return "该账户已挂失，不能取款。";
+			}
 			$res = $this->verify_withdraw_pwd( $id, $withdraw_password );
 			if( !( $res === true ) ){
 				return $res;
@@ -78,8 +146,19 @@
 		* 返回 true / false
 		*/
 		public function change_trade_pwd($id, $old_pwd, $new_pwd) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能修改密码。";
+				case 2:
+					return "该账户已申请挂失，不能修改密码。";
+				case 3:
+					return "该账户已销户，不能修改密码。";
+				case 4:
+					return "该账户已挂失，不能修改密码。";
+			}
 			if ($this->verify_trade_pwd($id, $old_pwd) == false)
-				return false;
+				return '交易密码错误。';
 			$new_pwd = md5($new_pwd);
 			$sql = "UPDATE funds_account SET trade_password='" . $new_pwd . "' WHERE id='" . $id . "'";
 			$this->db->query($sql);
@@ -91,6 +170,17 @@
 		* 返回 true / false
 		*/
 		public function change_withdraw_pwd($id, $old_pwd, $new_pwd) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能修改密码。";
+				case 2:
+					return "该账户已申请挂失，不能修改密码。";
+				case 3:
+					return "该账户已销户，不能修改密码。";
+				case 4:
+					return "该账户已挂失，不能修改密码。";
+			}
 			if ($this->verify_withdraw_pwd($id, $old_pwd) == false)
 				return false;
 			$new_pwd = md5($new_pwd);
@@ -113,6 +203,15 @@
 		* 补办
 		*/
 		public function reapply($account, $new_trade_pwd, $new_withdraw_pwd) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能补办。";
+				case 2:
+					return "该账户已申请挂失，不能补办。";
+				case 3:
+					return "该账户已销户，不能补办。";
+			}
 			if (!$this->verify_trade_pwd($account['id'],$account['trade_password'])) {
 				return '交易密码不正确';
 			}
@@ -131,28 +230,51 @@
 
 
 		// 申请挂失
-		// lost_state ： 
-		// 0 表示正在申请挂失，
-		// 1 表示已经在审核状态
-		// 2 表示已经挂失成功
 		public function	report_loss($id) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能申请挂失。";
+				case 2:
+					return "该账户已申请挂失，不能重复申请挂失。";
+				case 3:
+					return "该账户已销户，不能申请挂失。";
+				case 4:
+					return "该账户已挂失，不能申请挂失。";
+			}
 			return $this->manage_report($id, 'lost_application');
 		}
 
 		// 申请销户
 		public function report_cancel($id) {
+			$state = $this->get_account_state( $id );
+			switch( $state ){
+				case 1:
+					return "该账户已申请销户，不能重复申请销户。";
+				case 2:
+					return "该账户已申请挂失，不能申请销户。";
+				case 3:
+					return "该账户已销户，不能申请销户。";
+				case 4:
+					return "该账户已挂失，不能申请销户。";
+			}
+			if( $this->has_balance( $id ) ){
+				return "该账户仍有余额，不能申请销户。";
+			}
 			return $this->manage_report($id, 'cancel_application');	
 		}
 
 		// 兑换货币
 		public function exchange_currency($id, $withdraw_pwd, $currency_from, $currency_to, $amount) {
-			if (!$this->verify_withdraw_pwd($id, $withdraw_pwd) || 
-				!$this->verify_currency($currency_from) || 
-				!$this->verify_currency($currency_to))
-				return false;
+			if( !( $this->verify_withdraw_pwd($id, $withdraw_pwd) === true ) ){
+				return "取款密码不正确。";
+			}
+			if( !( $this->verify_currency($currency_from) === true ) || !( $this->verify_currency($currency_to) === true ) ){
+				return "不支持的币种。";
+			}
 			$t = $this->get_balance($id, $currency_from);
-			if ($t === false || $t < $amount)
-				return false;
+			if ($t < $amount)
+				return "余额不足。";
 			$rate = $this->get_rate($currency_from, $currency_to);
 			$this->modify_balance($id, $currency_from, -$amount);
 			$this->modify_balance($id, $currency_to, $amount * $rate);
@@ -319,13 +441,28 @@
 
 		// 取得一个帐户某个币种的余额
 		private function get_balance($id, $currency) {
-			if (!$this->verify_currency($currency))
-				return false;
 			$sql = "SELECT * FROM currency WHERE funds_account='" . $id . "' AND currency_type='" . $currency . "'";
 			$query = $this->db->query($sql);
 			if ($query->num_rows() == 0)
 				return 0;
 			return $query->row()->balance;
+		}
+
+		//判断一个资金账户是否还有余额，即是否有资格申请销户
+		private function has_balance( $id ){
+			$result = $this->db->get_where( 'currency', array( 'funds_account' => $id ) );
+			if( $result ){
+				$result = $result->result_array();
+				foreach( $result as $currency ){
+					if( ( $currency['balance'] + $currency['frozen_balance'] ) != 0 ){
+						return false;
+					}
+				}
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 
 		// 给某个帐户的某个币种增加/减少钱
@@ -468,6 +605,20 @@
 			if ($this->get_funds_account(array('id'=>$id)) === false) {
 				return '该账户不存在';
 			}
+			if( $type == "lost_application" ){
+				$this->db->where( 'id', $id );
+				$account = array(
+					'state' => 2
+					);
+				$this->db->update( 'funds_account', $account );
+			}
+			else if( $type == "cancel_application" ){
+				$this->db->where( 'id', $id );
+				$account = array(
+					'state' => 1
+					);
+				$this->db->update( 'funds_account', $account );
+			}
 			$this->db->insert($type, array(
 					'funds_account' => $id,
 					'state' => 0,
@@ -497,10 +648,11 @@
 		/**
 		* 验证账户是否可用
 		*/
+		/*
 		private function account_activte($id) {
 			$b1 = $this->db->get_where('funds_account', array('id' => $id))->row_array();
-			$b1 = ($b1['create_state'] != 0);
+			$b1 = ($b1['state'] != 0);
 			return $b1;
-		}
+		}*/
 	}
 ?>

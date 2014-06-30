@@ -21,11 +21,12 @@
 
 		// 管理员确认开户
 		// (id, true/false)
+		/*
 		public function handle_register($id, $result) {
 			$result = $result ? 0 : 2;
 			$sql = "UPDATE funds_account SET create_state='" . $result . "' WHERE id='" . $id . "'";
 			$this->db->query($sql);
-		}
+		}*/
 
 		// 处理挂失
 		// (id, true/false, "info")
@@ -49,11 +50,12 @@
 
 		// 列出等待审核的开户信息
 		// 返回数组，每行一条
+		/*
 		public function get_register_list() {
 			$sql = "SELECT * FROM funds_account WHERE create_state=0";
 			$query = $this->db->query($sql);
 			return $query->result_array();
-		}
+		}*/
 
 		// 列出等待审核的挂失信息
 		// 返回数组，每行一条

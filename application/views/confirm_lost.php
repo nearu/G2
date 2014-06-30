@@ -5,7 +5,6 @@ function getReply(form_id, reply_id) {
     input_reply = document.getElementById(reply_id);
     r = reply.value;
     input_reply.value = r;
-    alert(input_reply.value);
     form.submit();
 
 }

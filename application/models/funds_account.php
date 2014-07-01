@@ -388,9 +388,16 @@
 			$this->db->update('deputing_order', array('used_money' => $new_used_money));//更新数据库
 
 			
+			$query = $this->db->get_where('currency', array( 'funds_account' => $id, 'currency_type' => $currency ) );
+			if( $query->num_rows() == 0 ){
+				return false;
+			}
+			$res = $query->result_array();
+			$total_money = $res[0]['frozen_balance'];
+
 			$this->db->where('funds_account', $id);
 			$this->db->where('currency_type', $currency);
-			$this->db->update('currency', array('frozen_balance' => $total_frozen_money - $new_used_money));//更新数据库			
+			$this->db->update('currency', array('frozen_balance' => $total_money - $amount));//更新数据库			
 			
 
 			return true;

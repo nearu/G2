@@ -387,11 +387,11 @@
 			$this->db->where('order_number', $order_number);
 			$this->db->update('deputing_order', array('used_money' => $new_used_money));//更新数据库
 
-			/*
+			
 			$this->db->where('funds_account', $id);
 			$this->db->where('currency_type', $currency);
 			$this->db->update('currency', array('frozen_balance' => $total_frozen_money - $new_used_money));//更新数据库			
-			*/
+			
 
 			return true;
 		}
@@ -428,10 +428,11 @@
 				);
 			$this->db->update( 'deputing_order', $data );//更新数据库
 
-			if( ! ( $this->manage_freeze( $id, $currency, $total_frozen_money, 'unfreeze' ) === true ) ){
+			if( ! ( $this->manage_freeze( $id, $currency, $left_money, 'unfreeze' ) === true ) ){
 				//先解冻钱
 				return false;
 			}
+			/*
 			if( ! ( $this->modify_balance( $id, $currency, -$used_money ) === true ) ){
 				//再把钱扣掉
 				return false;
@@ -439,6 +440,7 @@
 			if( $left_money > 0 ){
 				//钱没花完，也就是钱数增加了，需要打日志
 			}
+			*/
 			
 			return true;
 		}
@@ -575,7 +577,7 @@
 			$new_balance = 0;
 			$new_frozen_balance = 0;
 			if($type == 'freeze') {
-				$new_balance = $old_balance-$amount;
+				$new_balance = $old_balance - $amount;
 				$new_frozen_balance = $old_frozen_balance + $amount;
 			} else {
 				$new_balance = $old_balance + $amount;
@@ -597,17 +599,18 @@
 
 			$this->load->model('funds_account_log_manager');
 			$balance = $new_balance;
-			$amount = 0;
 			if( $type == 'freeze' ){
 				$amount = -$amount;
 			}
-			$log = array(
-				'funds_account' => $id,
-				'currency' => $currency,
-				'amount' => $amount,
-				'balance' => $balance
-				);
-			$this->funds_account_log_manager->insert_log( $log );
+			if( $amount != 0 ){
+				$log = array(
+					'funds_account' => $id,
+					'currency' => $currency,
+					'amount' => $amount,
+					'balance' => $balance
+					);
+				$this->funds_account_log_manager->insert_log( $log );
+			}
 			return true;
 		}
 

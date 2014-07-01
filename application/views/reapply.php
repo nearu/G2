@@ -5,11 +5,11 @@
         <br><br>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp交易密码：<input type="password" name="trade_password" />
         <br><br>
-        重设交易密码：<input type="password" name="trade_password1" />
+        重设交易密码：<input type="password" name="new_trade_password" />
         <br><br>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp取款密码：<input type="password" name="withdraw_password" />
         <br><br>
-        重设取款密码：<input type="password" name="withdraw_password1" />
+        重设取款密码：<input type="password" name="new_withdraw_password" />
         <br><br>
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp

@@ -146,12 +146,10 @@ class admin extends CI_Controller {
 				'withdraw_password'	=> $this->input->post('withdraw_password'),
 				'trade_password'	=> $this->input->post('trade_password'),
 				);
-			echo $this->funds_account->reapply($account, $this->input->post('trade_password1'), $this->input->post('withdraw_pwd1'));
-			// if ($this->funds_account->reapply($account) === true) {
-			// 	header("Location: " . base_url('index.php/admin'));
-			// 	return;
-			// } 
-			return;
+			if ($this->funds_account->reapply($account, $this->input->post('new_trade_password'), $this->input->post('new_withdraw_password')) === true) {
+				header("Location: " . base_url('index.php/admin'));
+				return;
+			} 
 		}
 		$this->load->view("main_head",array("active"=>"reapply"));
 		$this->load->view("reapply");

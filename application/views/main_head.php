@@ -38,7 +38,7 @@ $this->load->helper("url");
             <li id="register" class="uk-parent">
                 <a href="<?=base_url('index.php/admin/confirm_register')?>"><i class="uk-icon-th-list"></i>&nbsp;       开户</a>
             </li>
-            <li id="register" class="uk-parent">
+            <li id="reapply" class="uk-parent">
                 <a href="<?=base_url('index.php/admin/reapply')?>"><i class="uk-icon-th-list"></i>&nbsp;       补办</a>
             </li>
             <li id="lost" class="uk-parent">

@@ -1,1 +1,7 @@
-f
+我们的本地环境主要依赖xampp这个软件提供的apache server和mysql数据库。
+1、打开xampp，启动apache服务器和mysql数据库服务
+
+2、如果是第一次使用，请先把G2这个app复制到xampp/htdocs目录下。再创建一个名为se的数据库。然后找到G2/application/se.sql文件，将这个sql文件导入到se数据库中。这样就完成了基本的配置
+
+3、打开浏览器，输入localhost/G2/index.php/admin，默认的用户名为admin，密码为123，就可以进入管理员界面。然后可以在里面进行各种操作。
+

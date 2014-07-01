@@ -183,4 +183,4 @@ INSERT INTO exchange_rate VALUES ('CHF', 'AUD', 1.1926);
 INSERT INTO exchange_rate VALUES ('CHF', 'CHF', 1);
 INSERT INTO exchange_rate VALUES ('CHF', 'SGD', 1.4049);
 
-INSERT INTO admin VALUES (1, 'admin', '21232f297a57a5a743894a0e4a801fc3');
+INSERT INTO admin VALUES (1, 'admin', md5('123'));

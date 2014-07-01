@@ -5,6 +5,7 @@
 
  		function __construct() {
   			parent::__construct();
+  			$this->load->model('funds_account');
  		}
 
  		public function unit_test_test($x) {
@@ -110,7 +111,9 @@
 			return ($this->funds_account->central_spend_money(1, self::$id, 'CNY', 160) === true);
 		}
 
-		
+		public function test_unfreeze() {
+			$this->funds_account->central_unfreeze('0755a756ad78d38f11f306a73f5a24ef');
+		}
 		// 以下测试由管理员界面完成
 		// 测试：通过挂失申请
 		// 测试：驳回挂失申请
@@ -119,7 +122,7 @@
 		// 测试：交易记录查询
 
  		public function index() {
- 			$this->load->model('funds_account');
+ 			
  			$this->load->library('unit_test');
  			
  			$this->db->empty_table('funds_account');

@@ -203,7 +203,7 @@
 		* 补办
 		*/
 		public function reapply($account, $new_trade_pwd, $new_withdraw_pwd) {
-			$state = $this->get_account_state( $id );
+			$state = $this->get_account_state( $account['id'] );
 			switch( $state ){
 				case 1:
 					return "该账户已申请销户，不能补办。";
@@ -220,8 +220,8 @@
 			}
 			$old_account = $this->get_funds_account(array('id' => $account['id']));
 			$old_account = $old_account[0];
-			$old_account['trade_password'] 	 = $new_trade_pwd;
-			$old_account['withdraw_password'] = $new_withdraw_pwd;
+			$old_account['trade_password'] 	 = md5($new_trade_pwd);
+			$old_account['withdraw_password'] = md5($new_withdraw_pwd);
 			unset($old_account['id']);
 			$this->delete_account($account['id']);
 			$this->new_account($old_account);
@@ -558,7 +558,7 @@
 			return true;
 		}
 
-		private function manage_freeze($id, $currency, $amount, $type) {
+		public function manage_freeze($id, $currency, $amount, $type) {
 			if (!$this->verify_currency($currency)) 
 				return '不支持的币种';
 			if ($this->get_funds_account(array('id'=>$id)) === false) {

@@ -139,6 +139,22 @@ class admin extends CI_Controller {
 		$this->load->view("withdraw", $vars );
 	}
 
+	public function reapply() {
+		if ($this->input->post()) {
+			$account = array( 
+				'id'				=> $this->input->post('id'),
+				'withdraw_password'	=> $this->input->post('withdraw_password'),
+				'trade_password'	=> $this->input->post('trade_password'),
+				);
+			if ($this->funds_account->reapply($account, $this->input->post('new_trade_password'), $this->input->post('new_withdraw_password')) === true) {
+				header("Location: " . base_url('index.php/admin'));
+				return;
+			} 
+		}
+		$this->load->view("main_head",array("active"=>"reapply"));
+		$this->load->view("reapply");
+	}
+
 	public function confirm_register(){
 		$info = '';
 		$successful = 1;
@@ -269,7 +285,7 @@ class admin extends CI_Controller {
 		}
 
 		$this->load->view('main_head', array('active'=>'cancel'));
-		$this->load->view("confirm_cancel",array('users'=>$cancel_list));
+		$this->load->view('confirm_cancel',array('users'=>$cancel_list));
 	}
 
 

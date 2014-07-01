@@ -203,7 +203,7 @@
 		* 补办
 		*/
 		public function reapply($account, $new_trade_pwd, $new_withdraw_pwd) {
-			$state = $this->get_account_state( $id );
+			$state = $this->get_account_state( $account['id'] );
 			switch( $state ){
 				case 1:
 					return "该账户已申请销户，不能补办。";
@@ -427,8 +427,7 @@
 				'used_money' => 0.0
 				);
 			$this->db->update( 'deputing_order', $data );//更新数据库
-
-			if( ! ( $this->manage_freeze( $id, $currency, $total_frozen_money, 'unfreeze' ) === true ) ){
+			if( ! ( $this->manage_freeze( $id, $currency, $total_frozen_money, 'unfreeze' ) === true ) ) {
 				//先解冻钱
 				return false;
 			}
@@ -556,7 +555,7 @@
 			return true;
 		}
 
-		private function manage_freeze($id, $currency, $amount, $type) {
+		public function manage_freeze($id, $currency, $amount, $type) {
 			if (!$this->verify_currency($currency)) 
 				return '不支持的币种';
 			if ($this->get_funds_account(array('id'=>$id)) === false) {

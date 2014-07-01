@@ -30,12 +30,10 @@ class admin extends CI_Controller {
 	}
 
 	public function main_page() {
-		$register_list 	= $this->funds_account_admin->get_register_list();
 		$lost_list 		= $this->funds_account_admin->get_lost_list();
 		$cancel_list 	= $this->funds_account_admin->get_cancel_list();
 		$data = array(
 			'realName' 		=> $this->session->userdata('username'),	
-			'registerNum' 	=> count($register_list),
 			'lostNum'		=> count($lost_list),
 			'cancelNum'		=> count($cancel_list),
 			);

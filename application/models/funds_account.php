@@ -331,7 +331,6 @@
 			$result = $this->db->get_where('funds_account', $where);
 			if ($result->num_rows() == 0) return false;
 			return $result->result_array();
-
 		}
 
 
@@ -388,10 +387,11 @@
 			$this->db->where('order_number', $order_number);
 			$this->db->update('deputing_order', array('used_money' => $new_used_money));//更新数据库
 
-
+			/*
 			$this->db->where('funds_account', $id);
 			$this->db->where('currency_type', $currency);
 			$this->db->update('currency', array('frozen_balance' => $total_frozen_money - $new_used_money));//更新数据库			
+			*/
 
 			return true;
 		}
